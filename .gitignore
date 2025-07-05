@@ -1,0 +1,31 @@
+# Flutter/Dart specific
+.dart_tool/
+.packages
+.pub-cache/
+build/
+
+# Firebase
+lib/firebase_options.dart
+
+# IDE specific
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Sensitive files
+*.keystore
+*.jks
+
+# Log files
+*.log
+
+# Generated files
+app/intermediates/
+app/outputs/
+app/build/

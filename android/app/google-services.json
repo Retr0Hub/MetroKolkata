@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "102121405807",
+    "project_id": "kolkatametroflutter",
+    "storage_bucket": "kolkatametroflutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102121405807:android:fca9619d1c88d9d3ed7c9a",
+        "android_client_info": {
+          "package_name": "com.metro.kolkata"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKvFxvuf4GxmElTZhDra3l0ycVkr-I5p8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
