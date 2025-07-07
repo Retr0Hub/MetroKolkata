@@ -8,6 +8,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keysPropertiesFile = rootProject.file("keys.properties")
+val keysProperties = java.util.Properties()
+if (keysPropertiesFile.exists()) {
+    keysProperties.load(java.io.FileInputStream(keysPropertiesFile))
+}
+
+
 android {
     namespace = "com.example.my_first_app"
     ndkVersion = "27.0.12077973"
@@ -31,6 +38,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["MAPS_API_KEY"] = keysProperties.getProperty("MAPS_API_KEY", "")
     }
 
     buildTypes {

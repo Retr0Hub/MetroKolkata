@@ -19,6 +19,7 @@ Thumbs.db
 *.keystore
 android/key.properties
 android/keys.properties
+android/app/google-services.json
 *.jks
 android/local.properties
 
