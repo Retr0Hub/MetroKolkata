@@ -34,7 +34,7 @@ jobs:
           channel: 'stable'
 
       - name: Build Flutter web
-        run: flutter build web --release --base-href /${{ github.event.repository.name }}/
+        run: flutter build web --release --base-href /metrokolkata/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
