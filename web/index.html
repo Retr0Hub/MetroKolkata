@@ -1,60 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A Flutter application for navigating the Kolkata Metro system.">
+  <meta name="description" content="A new Flutter project.">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Kolkata Metro">
+  <meta name="apple-mobile-web-app-title" content="my_first_app">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Kolkata Metro</title>
+  <title>my_first_app</title>
   <link rel="manifest" href="manifest.json">
   <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__"></script>
 
-  <style>
-    html, body {
-      background-color: #000000; /* Black background */
-      height: 100%;
-      margin: 0;
-      overflow: hidden; /* Prevent scrollbars on the page */
-    }
-
-    body {
-      /* The body is the positioning container for the phone bezel */
-    }
-
-    /* Style the element that Flutter generates to look like a phone */
-    flutter-view {
-      /* --- Centering and Positioning --- */
-      /* Use absolute positioning to center the element and allow transform */
-      position: absolute !important;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-
-      /* --- Responsive Scaling --- */
-      width: 430px; /* Set a base width */
-      aspect-ratio: 9 / 16; /* Enforce a 9:16 aspect ratio */
-      max-height: calc(100vh - 40px);
-      max-width: calc(100vw - 40px);
-
-      /* --- Bezel Styling --- */
-      border: 15px solid #1c1c1e;
-      border-radius: 55px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
-      overflow: hidden !important; /* Ensures the app stays within the rounded corners */
-      box-sizing: border-box; /* Make sure border is included in width/height */
-    }
-  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
