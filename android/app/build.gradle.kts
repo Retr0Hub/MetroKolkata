@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -9,16 +12,30 @@ plugins {
 }
 
 val keysPropertiesFile = rootProject.file("keys.properties")
-val keysProperties = java.util.Properties()
+val keysProperties = Properties()
 if (keysPropertiesFile.exists()) {
-    keysProperties.load(java.io.FileInputStream(keysPropertiesFile))
+    keysProperties.load(FileInputStream(keysPropertiesFile))
 }
 
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties()
+if (keyPropertiesFile.exists()) {
+    keyProperties.load(FileInputStream(keyPropertiesFile))
+}
 
 android {
     namespace = "com.example.my_first_app"
     ndkVersion = "27.0.12077973"
     compileSdk = flutter.compileSdkVersion
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keyProperties.getProperty("keyAlias")
+            keyPassword = keyProperties.getProperty("keyPassword")
+            storeFile = if (keyProperties.getProperty("storeFile") != null) rootProject.file(keyProperties.getProperty("storeFile")) else null
+            storePassword = keyProperties.getProperty("storePassword")
+        }
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -43,9 +60,8 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Use the release signing configuration.
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
