@@ -21,12 +21,13 @@ Thumbs.db
 # Sensitive files
 *.keystore
 android/key.properties
+android/keys.properties
 *.jks
+android/local.properties
 
 # Log files
 *.log
 
-# Generated files
-app/intermediates/
-app/outputs/
-app/build/
+# Android specific generated files
+android/build/
+android/.gradle/
