@@ -33,6 +33,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Inject Google Maps API key
+        run: sed -i 's|__GOOGLE_MAPS_API_KEY__|${{ secrets.MAPS_API_KEY_WEB }}|g' web/index.html
+
       - name: Build Flutter web
         run: flutter build web --release --base-href /metrokolkata/
 

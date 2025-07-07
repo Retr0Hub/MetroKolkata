@@ -54,7 +54,7 @@ class AuthDecisionScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => const SignupScreen()),
+                    MaterialPageRoute(builder: (ctx) => const SignUpScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
