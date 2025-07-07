@@ -15,14 +15,14 @@ A Flutter application for navigating the Kolkata Metro system, built with Google
 
 <table align="center">
   <tr>
-    <td align="center" valign="top"><img src="screenshots/1.png" width="220" alt="Screenshot 1"></td>
-    <td align="center" valign="top"><img src="screenshots/2.png" width="220" alt="Screenshot 2"></td>
-    <td align="center" valign="top"><img src="screenshots/3.png" width="220" alt="Screenshot 3"></td>
+    <td align="center" valign="top"><img src="screenshots/1.jpg" width="220" alt="Screenshot 1"></td>
+    <td align="center" valign="top"><img src="screenshots/2.jpg" width="220" alt="Screenshot 2"></td>
+    <td align="center" valign="top"><img src="screenshots/3.jpg" width="220" alt="Screenshot 3"></td>
   </tr>
   <tr>
-    <td align="center" valign="top"><img src="screenshots/4.png" width="220" alt="Screenshot 4"></td>
-    <td align="center" valign="top"><img src="screenshots/5.png" width="220" alt="Screenshot 5"></td>
-    <td align="center" valign="top"><img src="screenshots/6.png" width="220" alt="Screenshot 6"></td>
+    <td align="center" valign="top"><img src="screenshots/4.jpg" width="220" alt="Screenshot 4"></td>
+    <td align="center" valign="top"><img src="screenshots/5.jpg" width="220" alt="Screenshot 5"></td>
+    <td align="center" valign="top"><img src="screenshots/6.jpg" width="220" alt="Screenshot 6"></td>
   </tr>
 </table>
 
