@@ -33,6 +33,26 @@
   <link rel="manifest" href="manifest.json">
   <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__"></script>
 
+  <style>
+    body {
+      background-color: #f0f0f0; /* A neutral background for the page */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Style the element that Flutter generates to look like a phone */
+    flutter-view {
+      width: 430px !important; /* iPhone 15 Pro Max width */
+      height: 850px !important; /* Adjusted height for better viewing */
+      border: 15px solid #1c1c1e;
+      border-radius: 55px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+      overflow: hidden; /* Ensures the app stays within the rounded corners */
+    }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

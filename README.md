@@ -2,7 +2,7 @@
 
 A Flutter application for navigating the Kolkata Metro system, built with Google Maps, Firebase, and Provider.
 
-**[Live Demo](https://retr0hub.github.io/metrokolkata/)** 👈
+**[Live Demo](https://retr0hub.github.io/MetroKolkata/)** 👈
 
 ## 🌟 Features
 
@@ -28,8 +28,8 @@ To get a local copy up and running, follow these simple steps.
 
 1.  **Clone the repo**
     ```sh
-    git clone https://github.com/your_username/my_first_app.git
-    cd my_first_app
+    git clone https://github.com/retr0hub/MetroKolkata.git
+    cd MetroKolkata
     ```
 
 2.  **Install dependencies**
