@@ -7,15 +7,12 @@ class ThemeProvider with ChangeNotifier {
 
   ThemeMode get themeMode => _themeMode;
 
-  ThemeProvider() {
-    _loadThemeFromPrefs();
-  }
-
-  void _loadThemeFromPrefs() async {
+  // Renamed to be more explicit and made public
+  Future<void> loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeIndex = prefs.getInt(_themePrefKey) ?? ThemeMode.dark.index;
     _themeMode = ThemeMode.values[themeIndex];
-    notifyListeners();
+    notifyListeners(); // Notify listeners after loading
   }
 
   void setTheme(ThemeMode themeMode) async {

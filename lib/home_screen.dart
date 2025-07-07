@@ -10,14 +10,9 @@ import 'profile_screen.dart';
 import 'recharge_screen.dart';
 import 'tickets_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // Get the current user from FirebaseAuth

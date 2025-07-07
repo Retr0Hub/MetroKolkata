@@ -60,6 +60,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonTextStyle =
+        GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -88,9 +91,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (_) => const LoginScreen()));
                 },
-                child: Text('Log In',
-                    style: GoogleFonts.roboto(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text('Log In', style: buttonTextStyle),
               ),
               const SizedBox(height: 16),
               OutlinedButton(
@@ -98,9 +99,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const SignUpScreen()));
                 },
-                child: Text('Sign Up',
-                    style: GoogleFonts.roboto(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text('Sign Up', style: buttonTextStyle),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(
@@ -122,8 +121,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       )
                     : Text(
                         'Continue with Google',
-                        style: GoogleFonts.roboto(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        style: buttonTextStyle,
                       ),
               ),
               const SizedBox(height: 32),

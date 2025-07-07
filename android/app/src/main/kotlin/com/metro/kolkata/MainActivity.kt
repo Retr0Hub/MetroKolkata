@@ -1,4 +1,4 @@
-package com.metro.kolkatametro
+package com.metro.kolkata
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -8,12 +8,24 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // If Firebase initialization fails, you can log the error
+    // and maybe show an error screen.
+    debugPrint("Failed to initialize Firebase: $e");
+  }
+
+  // Create and initialize the provider before running the app
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    ChangeNotifierProvider.value(
+      // Use .value constructor when providing an existing instance
+      value: themeProvider,
       child: const MyApp(),
     ),
   );
