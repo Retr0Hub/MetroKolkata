@@ -29,19 +29,21 @@
     }
 
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      /* The body is the positioning container for the phone bezel */
     }
 
     /* Style the element that Flutter generates to look like a phone */
     flutter-view {
-      position: relative !important;
+      /* --- Centering and Positioning --- */
+      /* Use absolute positioning to center the element and allow transform */
+      position: absolute !important;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
 
       /* --- Responsive Scaling --- */
-      /* This is the key for scaling while maintaining shape */
-      aspect-ratio: 430 / 850;
-      /* Use max-height/width to ensure it fits, respecting a 40px padding */
+      width: 430px; /* Set a base width */
+      aspect-ratio: 9 / 16; /* Enforce a 9:16 aspect ratio */
       max-height: calc(100vh - 40px);
       max-width: calc(100vw - 40px);
 
@@ -49,7 +51,7 @@
       border: 15px solid #1c1c1e;
       border-radius: 55px;
       box-shadow: 0 4px 30px rgba(0,0,0,0.4);
-      overflow: hidden; /* Ensures the app stays within the rounded corners */
+      overflow: hidden !important; /* Ensures the app stays within the rounded corners */
       box-sizing: border-box; /* Make sure border is included in width/height */
     }
   </style>
