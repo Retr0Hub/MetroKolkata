@@ -21,17 +21,22 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=__GOOGLE_MAPS_API_KEY__"></script>
 
   <style>
-    body {
+    html, body {
       background-color: #000000; /* Black background */
+      height: 100%;
+      margin: 0;
+      overflow: hidden; /* Prevent scrollbars on the page */
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
     }
 
     /* Style the element that Flutter generates to look like a phone */
     flutter-view {
+      position: relative; /* This is the key: it creates a positioning context for the Flutter app */
       width: 430px !important; /* iPhone 15 Pro Max width */
       height: 850px !important; /* Adjusted height for better viewing */
       border: 15px solid #1c1c1e;
