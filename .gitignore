@@ -4,9 +4,6 @@
 .pub-cache/
 build/
 
-# Firebase
-lib/firebase_options.dart
-
 # IDE specific
 .idea/
 .vscode/
