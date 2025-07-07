@@ -71,4 +71,4 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE.md` for more information. (You'll need to add a LICENSE file).
+Distributed under the MIT License. See `LICENSE.md` for more information.

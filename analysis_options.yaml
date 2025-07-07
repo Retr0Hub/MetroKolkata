@@ -1,11 +1,14 @@
 include: package:flutter_lints/flutter.yaml
 
 linter:
+  # For a full list of rules, see https://dart.dev/lints/rules
   rules:
-    avoid_print: false
-    prefer_const_constructors_in_immutables: false
-    prefer_const_constructors: false
-    prefer_const_literals_to_create_immutables: false
-    prefer_final_fields: false
-    unnecessary_breaks: true
-    use_key_in_widget_constructors: false
+    # TODO: Remove print calls before release.
+    avoid_print: false # It's good practice to enable this for production.
+
+    # The following are highly recommended for performance and code health.
+    # You can enable them one by one to fix the resulting warnings.
+    # prefer_const_constructors: true
+    # prefer_const_literals_to_create_immutables: true
+    # prefer_final_fields: true
+    # use_key_in_widget_constructors: true
