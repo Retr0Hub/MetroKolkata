@@ -24,7 +24,7 @@ if (keyPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.example.my_first_app"
+    namespace = "com.metro.kolkata"
     ndkVersion = "27.0.12077973"
     compileSdk = flutter.compileSdkVersion
 
@@ -47,6 +47,7 @@ android {
     }
 
     defaultConfig {
+        applicationId = "com.metro.kolkata"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
