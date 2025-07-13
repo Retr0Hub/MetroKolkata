@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'theme_provider.dart';
 import 'auth_wrapper.dart';
 import 'firebase_options.dart';
+import 'splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,9 +24,8 @@ void main() async {
   await themeProvider.loadTheme();
 
   runApp(
-    ChangeNotifierProvider.value(
-      // Use .value constructor when providing an existing instance
-      value: themeProvider,
+    ChangeNotifierProvider(
+      create: (_) => themeProvider,
       child: const MyApp(),
     ),
   );
@@ -40,10 +40,10 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Kolkata Metro',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.lightTheme(),
+          darkTheme: AppTheme.darkTheme(),
           themeMode: themeProvider.themeMode,
-          home: const AuthWrapper(),
+          home: const SplashScreen(),
           debugShowCheckedModeBanner: false,
         );
       },

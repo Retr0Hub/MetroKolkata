@@ -1,0 +1,115 @@
+{
+  "lines": [
+    {
+      "line_id": "blue_line",
+      "line_name": "Blue Line",
+      "line_display_name": "North-South Corridor",
+      "color_hex": "#007FFF",
+      "timings": {
+        "weekday": {
+          "first_train": "06:45",
+          "last_train": "21:55",
+          "frequency_peak": "6-7 mins",
+          "frequency_off_peak": "10-15 mins"
+        },
+        "sunday": {
+          "first_train": "09:00",
+          "last_train": "21:55",
+          "frequency_peak": "15 mins",
+          "frequency_off_peak": "15 mins"
+        }
+      },
+      "stations": [
+        {"station_id": "BL01", "station_name": "Dakshineswar", "latitude": 22.6553, "longitude": 88.3583, "interchange": false},
+        {"station_id": "BL02", "station_name": "Baranagar", "latitude": 22.6383, "longitude": 88.3672, "interchange": false},
+        {"station_id": "BL03", "station_name": "Noapara", "latitude": 22.6248, "longitude": 88.3833, "interchange": true},
+        {"station_id": "BL04", "station_name": "Dum Dum", "latitude": 22.6248, "longitude": 88.4001, "interchange": true},
+        {"station_id": "BL05", "station_name": "Belgachia", "latitude": 22.6072, "longitude": 88.3875, "interchange": false},
+        {"station_id": "BL06", "station_name": "Shyambazar", "latitude": 22.5983, "longitude": 88.3742, "interchange": false},
+        {"station_id": "BL07", "station_name": "Shobhabazar Sutanuti", "latitude": 22.5919, "longitude": 88.3694, "interchange": false},
+        {"station_id": "BL08", "station_name": "Girish Park", "latitude": 22.5853, "longitude": 88.3661, "interchange": false},
+        {"station_id": "BL09", "station_name": "Mahatma Gandhi Road", "latitude": 22.5789, "longitude": 88.3628, "interchange": false},
+        {"station_id": "BL10", "station_name": "Central", "latitude": 22.5711, "longitude": 88.3592, "interchange": false},
+        {"station_id": "BL11", "station_name": "Chandni Chowk", "latitude": 22.5658, "longitude": 88.3558, "interchange": false},
+        {"station_id": "BL12", "station_name": "Esplanade", "latitude": 22.5625, "longitude": 88.3519, "interchange": true},
+        {"station_id": "BL13", "station_name": "Park Street", "latitude": 22.5547, "longitude": 88.3522, "interchange": true},
+        {"station_id": "BL14", "station_name": "Maidan", "latitude": 22.5481, "longitude": 88.3492, "interchange": false},
+        {"station_id": "BL15", "station_name": "Netaji Bhavan", "latitude": 22.5378, "longitude": 88.3447, "interchange": false},
+        {"station_id": "BL16", "station_name": "Jatin Das Park", "latitude": 22.5272, "longitude": 88.3458, "interchange": false},
+        {"station_id": "BL17", "station_name": "Kalighat", "latitude": 22.5211, "longitude": 88.3453, "interchange": false},
+        {"station_id": "BL18", "station_name": "Rabindra Sarobar", "latitude": 22.5119, "longitude": 88.3475, "interchange": false},
+        {"station_id": "BL19", "station_name": "Mahanayak Uttam Kumar", "latitude": 22.5008, "longitude": 88.3525, "interchange": false},
+        {"station_id": "BL20", "station_name": "Netaji", "latitude": 22.4914, "longitude": 88.3611, "interchange": false},
+        {"station_id": "BL21", "station_name": "Masterda Surya Sen", "latitude": 22.4828, "longitude": 88.3711, "interchange": false},
+        {"station_id": "BL22", "station_name": "Gitanjali", "latitude": 22.4767, "longitude": 88.3808, "interchange": false},
+        {"station_id": "BL23", "station_name": "Kavi Nazrul", "latitude": 22.4719, "longitude": 88.3892, "interchange": false},
+        {"station_id": "BL24", "station_name": "Shahid Khudiram", "latitude": 22.4667, "longitude": 88.3975, "interchange": false},
+        {"station_id": "BL25", "station_name": "Kavi Subhash", "latitude": 22.4625, "longitude": 88.4058, "interchange": true}
+      ]
+    },
+    {
+      "line_id": "green_line",
+      "line_name": "Green Line",
+      "line_display_name": "East-West Corridor",
+      "color_hex": "#008000",
+      "timings": {
+        "weekday": {
+          "first_train": "07:00",
+          "last_train": "21:30",
+          "frequency_peak": "12 mins",
+          "frequency_off_peak": "15 mins"
+        },
+        "sunday": {
+          "first_train": "N/A",
+          "last_train": "N/A",
+          "frequency_peak": "N/A",
+          "frequency_off_peak": "N/A"
+        }
+      },
+      "stations": [
+        {"station_id": "GR01", "station_name": "Salt Lake Sector V", "latitude": 22.5722, "longitude": 88.4311, "interchange": false},
+        {"station_id": "GR02", "station_name": "Karunamoyee", "latitude": 22.5769, "longitude": 88.4194, "interchange": false},
+        {"station_id": "GR03", "station_name": "Central Park", "latitude": 22.5808, "longitude": 88.4111, "interchange": false},
+        {"station_id": "GR04", "station_name": "City Center", "latitude": 22.5853, "longitude": 88.4042, "interchange": false},
+        {"station_id": "GR05", "station_name": "Bengal Chemical", "latitude": 22.5881, "longitude": 88.3969, "interchange": false},
+        {"station_id": "GR06", "station_name": "Salt Lake Stadium", "latitude": 22.5819, "longitude": 88.3903, "interchange": false},
+        {"station_id": "GR07", "station_name": "Phoolbagan", "latitude": 22.5758, "longitude": 88.3861, "interchange": false},
+        {"station_id": "GR08", "station_name": "Sealdah", "latitude": 22.5667, "longitude": 88.3719, "interchange": true},
+        {"station_id": "GR09", "station_name": "Esplanade", "latitude": 22.5625, "longitude": 88.3519, "interchange": true},
+        {"station_id": "GR10", "station_name": "Mahakaran", "latitude": 22.5714, "longitude": 88.3486, "interchange": false},
+        {"station_id": "GR11", "station_name": "Howrah", "latitude": 22.5833, "longitude": 88.3431, "interchange": true},
+        {"station_id": "GR12", "station_name": "Howrah Maidan", "latitude": 22.5803, "longitude": 88.3333, "interchange": false}
+      ]
+    },
+    {
+      "line_id": "purple_line",
+      "line_name": "Purple Line",
+      "line_display_name": "Joka-Esplanade Corridor",
+      "color_hex": "#800080",
+      "timings": {
+        "weekday": {
+          "first_train": "08:55",
+          "last_train": "16:20",
+          "frequency_peak": "60 mins",
+          "frequency_off_peak": "60 mins"
+        },
+        "sunday": {
+          "first_train": "N/A",
+          "last_train": "N/A",
+          "frequency_peak": "N/A",
+          "frequency_off_peak": "N/A"
+        }
+      },
+      "stations": [
+        {"station_id": "PU01", "station_name": "Joka", "latitude": 22.4667, "longitude": 88.3056, "interchange": false},
+        {"station_id": "PU02", "station_name": "Thakurpukur", "latitude": 22.4736, "longitude": 88.3111, "interchange": false},
+        {"station_id": "PU03", "station_name": "Sakherbazar", "latitude": 22.4819, "longitude": 88.3167, "interchange": false},
+        {"station_id": "PU04", "station_name": "Behala Chowrasta", "latitude": 22.4903, "longitude": 88.3222, "interchange": false},
+        {"station_id": "PU05", "station_name": "Behala Bazar", "latitude": 22.4986, "longitude": 88.3278, "interchange": false},
+        {"station_id": "PU06", "station_name": "Taratala", "latitude": 22.5069, "longitude": 88.3333, "interchange": false}
+      ]
+    }
+  ]
+}
+
+

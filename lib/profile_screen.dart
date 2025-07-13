@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'theme_provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,10 +11,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _user = FirebaseAuth.instance.currentUser;
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  bool _isEditingName = false;
-  bool _isSaving = false;
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   void dispose() {
@@ -23,263 +21,264 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _updateUserName() async {
-    if (_user == null || _nameController.text.trim().isEmpty) return;
+  Future<void> _updateFullName() async {
+    if (user == null) return;
 
-    setState(() => _isSaving = true);
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(_user!.uid)
-          .update({'fullName': _nameController.text.trim()});
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+    if (_formKey.currentState!.validate()) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .update({'fullName': _nameController.text.trim()});
+        navigator.pop(); // Close the dialog
+        scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Name updated successfully!')),
         );
-        setState(() {
-          _isEditingName = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update name: $e')),
+      } catch (e) {
+        navigator.pop();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error updating name: $e')),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
       }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_user == null) {
-      // This should not happen if the app flow is correct, but it's a good safeguard.
-      return Scaffold(
-        appBar: AppBar(title: const Text('My Profile')),
-        body: const Center(child: Text('No user found.')),
-      );
-    }
-
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream:
-          FirebaseFirestore.instance.collection('users').doc(_user!.uid).snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('My Profile')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('My Profile')),
-            body: const Center(child: Text('Could not load profile.')),
-          );
-        }
-
-        final userData = snapshot.data!.data()!;
-        if (!_isEditingName) {
-          _nameController.text = userData['fullName'] ?? '';
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('My Profile'),
+  Future<void> _showEditNameDialog(String currentName) async {
+    _nameController.text = currentName;
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Full Name'),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: 'Full Name'),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your full name';
+                }
+                return null;
+              },
+            ),
           ),
-          body: ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              _buildProfileHeader(context, userData),
-              const SizedBox(height: 24),
-              _buildNameSection(context, userData),
-              const SizedBox(height: 16),
-              _buildInfoTile(context, 'Email', userData['email'] ?? 'Not provided',
-                  Icons.email_outlined),
-              if (userData['phoneNumber'] != null &&
-                  (userData['phoneNumber'] as String).isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _buildInfoTile(context, 'Phone Number',
-                    userData['phoneNumber'], Icons.phone_outlined),
-              ],
-              const SizedBox(height: 16),
-              _buildInfoTile(
-                  context,
-                  'Member Since',
-                  _formatTimestamp(userData['createdAt']),
-                  Icons.calendar_today_outlined),
-              const Divider(height: 48),
-              _buildThemeSwitcher(context),
-              const Divider(height: 48),
-              _buildDangerZone(context),
-            ],
-          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: _updateFullName,
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildProfileHeader(
-      BuildContext context, Map<String, dynamic> userData) {
-    final String name = userData['fullName'] ?? 'U';
-    return Column(
+  Future<void> _deleteAccount() async {
+    if (user == null) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    try {
+      // Delete user document from Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user!.uid).delete();
+
+      // Sign out from providers
+      await GoogleSignIn().signOut();
+      
+      // Delete the user from Firebase Auth
+      await user!.delete();
+
+      // Pop all routes until we are back at the root (likely the login screen)
+      navigator.popUntil((route) => route.isFirst);
+
+    } on FirebaseAuthException catch (e) {
+      String message;
+      if (e.code == 'requires-recent-login') {
+        message = 'This action requires a recent sign-in. Please log out and log back in to continue.';
+      } else {
+        message = 'Error deleting account: ${e.message}';
+      }
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(message)));
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text('An unexpected error occurred: $e')));
+    }
+  }
+
+  Future<void> _showDeleteConfirmationDialog() async {
+    final bool? confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+            'This is a permanent action. All your data will be lost. Are you sure you want to proceed?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmDelete == true) {
+      _deleteAccount();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (user == null) {
+      // This should ideally not happen if ProfileScreen is protected
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(child: Text('Not logged in.')),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        // The hamburger menu is gone. A back button is automatically added.
+        title: const Text('Profile & Settings'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+      ),
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance.collection('users').doc(user!.uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text('Could not load user data.'));
+          }
+
+          final userData = snapshot.data!.data()!;
+          final String fullName = userData['fullName'] ?? 'N/A';
+          final String email = userData['email'] ?? 'N/A';
+          final String? photoUrl = user!.photoURL;
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            children: [
+              _buildProfileHeader(context, fullName, email, photoUrl),
+              const SizedBox(height: 24),
+              _buildSectionTitle(context, 'Account Settings'),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    _buildSettingsTile(
+                      icon: Icons.edit_outlined,
+                      title: 'Full Name',
+                      subtitle: fullName,
+                      onTap: () => _showEditNameDialog(fullName),
+                    ),
+                    const Divider(height: 1),
+                    _buildSettingsTile(
+                      icon: Icons.email_outlined,
+                      title: 'Email',
+                      subtitle: email,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildSectionTitle(context, 'Danger Zone'),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: _buildSettingsTile(
+                  icon: Icons.delete_forever_outlined,
+                  title: 'Delete Account',
+                  subtitle: 'This action is permanent',
+                  iconColor: Colors.red,
+                  titleColor: Colors.red,
+                  onTap: _showDeleteConfirmationDialog,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, String name, String email, String? photoUrl) {
+    return Row(
       children: [
         CircleAvatar(
-          radius: 50,
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Text(
-            name.isNotEmpty ? name.substring(0, 1).toUpperCase() : 'U',
-            style: TextStyle(
-                fontSize: 40,
-                color: Theme.of(context).colorScheme.onPrimaryContainer),
-          ),
+          radius: 32,
+          backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+          child: photoUrl == null
+              ? Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                  style: const TextStyle(fontSize: 30, color: Colors.white),
+                )
+              : null,
         ),
-        const SizedBox(height: 16),
-        Text(
-          userData['fullName'] ?? 'User',
-          style:
-              Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNameSection(
-      BuildContext context, Map<String, dynamic> userData) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Full Name', style: Theme.of(context).textTheme.titleMedium),
-                IconButton(
-                  icon: Icon(_isEditingName ? Icons.close : Icons.edit_outlined),
-                  onPressed: () => setState(() => _isEditingName = !_isEditingName),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (_isEditingName)
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Enter new name'),
-                      autofocus: true,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  _isSaving
-                      ? const CircularProgressIndicator()
-                      : IconButton(
-                          icon: const Icon(Icons.check),
-                          onPressed: _updateUserName,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                ],
-              )
-            else
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                userData['fullName'] ?? 'Not set',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18),
+                name,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoTile(
-      BuildContext context, String title, String subtitle, IconData icon) {
-    return Card(
-      child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary),
-        title: Text(title),
-        subtitle: Text(
-          subtitle,
-          style:
-              Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-  String _formatTimestamp(Timestamp? timestamp) {
-    if (timestamp == null) return 'N/A';
-    final date = timestamp.toDate();
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  Widget _buildThemeSwitcher(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('App Theme', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 16),
-        SegmentedButton<ThemeMode>(
-          segments: const [
-            ButtonSegment(
-                value: ThemeMode.light,
-                label: Text('Light'),
-                icon: Icon(Icons.light_mode_outlined)),
-            ButtonSegment(
-                value: ThemeMode.dark,
-                label: Text('Dark'),
-                icon: Icon(Icons.dark_mode_outlined)),
-            ButtonSegment(
-                value: ThemeMode.system,
-                label: Text('System'),
-                icon: Icon(Icons.settings_system_daydream_outlined)),
-          ],
-          selected: {themeProvider.themeMode},
-          onSelectionChanged: (newSelection) {
-            themeProvider.setTheme(newSelection.first);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDangerZone(BuildContext context) {
-    // Placeholder for delete functionality
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Danger Zone',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: Theme.of(context).colorScheme.error),
-        ),
-        const SizedBox(height: 8),
-        Card(
-          color: Theme.of(context).colorScheme.errorContainer,
-          child: ListTile(
-            leading: Icon(Icons.delete_forever,
-                color: Theme.of(context).colorScheme.onErrorContainer),
-            title: Text(
-              'Delete Account',
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                  fontWeight: FontWeight.bold),
-            ),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Delete account functionality coming soon.')));
-            },
+              const SizedBox(height: 2),
+              Text(
+                email,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+              ),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.8,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+    Color? iconColor,
+    Color? titleColor,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor ?? Theme.of(context).colorScheme.primary),
+      title: Text(title, style: TextStyle(color: titleColor, fontWeight: FontWeight.w500)),
+      subtitle: Text(subtitle, style: TextStyle(color: Colors.grey.shade600)),
+      trailing: onTap != null ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+      onTap: onTap,
     );
   }
 }
+
