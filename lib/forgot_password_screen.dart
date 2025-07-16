@@ -1,7 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'otp_verification_screen.dart';
-import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -15,78 +14,59 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  void _sendResetOtp() {
+  Future<void> _sendPasswordResetEmail() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    final email = _emailController.text.trim();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
-    // --- TODO: Implement Backend Logic for Sending OTP ---
-    // This would call your backend to generate and send an OTP to the email.
-    debugPrint('Send OTP request for $email');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('(Demo) An OTP has been sent to the console.')),
-    );
-
-    // Simulate network call before navigating
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+            content: Text('Password reset link sent! Check your email.')),
+      );
+      navigator.pop();
+    } on FirebaseAuthException catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(e.message ?? 'An error occurred.')),
+      );
+    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => OtpVerificationScreen(
-              verificationTarget: email,
-              onVerify: (otp) async {
-                // --- TODO: Implement Backend Logic for OTP Verification ---
-                // This is a placeholder. A real implementation requires a backend.
-                if (otp.length == 6) {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (_) => const ResetPasswordScreen()));
-                  return true;
-                }
-                return false;
-              },
-              onResend: () {
-                // --- TODO: Implement Backend Logic for Resending OTP ---
-                debugPrint('Resend OTP request for $email');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text(
-                          '(Demo) A new OTP has been sent to the console.')),
-                );
-              },
-            ),
-          ),
-        );
       }
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Enter your account\'s email',
-                style: GoogleFonts.roboto(
-                    fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'We\'ll send a verification code to your email to reset your password.',
-                style: Theme.of(context).textTheme.titleMedium,
+                'Enter your email to reset your password',
+                style: GoogleFonts.inter(
+                    fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 32),
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                decoration: _uberInputDecoration('Email'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty || !value.contains('@')) {
@@ -97,16 +77,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: _isLoading ? null : _sendResetOtp,
+                onPressed: _isLoading ? null : _sendPasswordResetEmail,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 child: _isLoading
                     ? const SizedBox(
                         width: 24,
                         height: 24,
                         child: CircularProgressIndicator(
                             strokeWidth: 3, color: Colors.black))
-                    : Text('Send Code',
-                        style: GoogleFonts.roboto(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    : Text('Send Reset Link',
+                        style: GoogleFonts.inter(
+                            fontSize: 18, fontWeight: FontWeight.bold),),
               ),
             ],
           ),
@@ -114,4 +102,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ),
     );
   }
+}
+
+InputDecoration _uberInputDecoration(String labelText) {
+  return InputDecoration(
+    labelText: labelText,
+    labelStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+    filled: true,
+    fillColor: const Color(0xFF2C2C2E),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide.none,
+    ),
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
+  );
 }

@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'phone_auth_screen.dart';
 import 'forgot_password_screen.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -64,6 +68,48 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // The user canceled the sign-in
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null && userCredential.additionalUserInfo!.isNewUser) {
+        // Create a new document for the user in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+          'createdAt': FieldValue.serverTimestamp(),
+          'metroCardBalance': 0,
+        });
+      }
+
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign in with Google: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   void _navigateToPhoneAuth() {
     if (!_formKey.currentState!.validate()) return;
 
@@ -82,24 +128,29 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Log in to your account',
-                style: GoogleFonts.roboto(
-                    fontSize: 28, fontWeight: FontWeight.bold),
+                "What's your email or phone number?",
+                style: GoogleFonts.inter(
+                    fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 32),
               TextFormField(
                 controller: _identifierController,
-                decoration: _uberInputDecoration(context,
-                    labelText: 'Email or Phone Number'),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+                decoration: _uberInputDecoration('Email or Phone'),
                 keyboardType: TextInputType.text,
                 validator: (value) =>
                     value!.isEmpty
@@ -121,8 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            decoration: _uberInputDecoration(
-                                context, labelText: 'Password'),
+                            style: const TextStyle(color: Colors.white, fontSize: 18),
+                            decoration: _uberInputDecoration('Password'),
                             validator: (value) => _isEmail && (value == null || value.isEmpty)
                                 ? 'Please enter a password'
                                 : null,
@@ -133,28 +184,82 @@ class _LoginScreenState extends State<LoginScreen> {
                                   builder: (_) => const ForgotPasswordScreen()));
                             },
                             child: const Text('Forgot Password?'),
+                            style: TextButton.styleFrom(foregroundColor: Colors.grey.shade400),
                           ),
                         ],
                       )
                     : const SizedBox.shrink(key: ValueKey('empty_space')),
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _isLoading
-                    ? null
-                    : (_isEmail ? _loginWithEmail : _navigateToPhoneAuth),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 3, color: Colors.black))
-                    : Text(
-                        _isEmail ? 'Log In' : 'Continue',
-                        style: GoogleFonts.roboto(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : (_isEmail ? _loginWithEmail : _navigateToPhoneAuth),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 3, color: Colors.black))
+                      : Text(
+                          _isEmail ? 'Log In' : 'Continue',
+                          style: GoogleFonts.inter(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                ),
               ),
+              const SizedBox(height: 24),
+              const Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.grey)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('or', style: TextStyle(color: Colors.grey)),
+                  ),
+                  Expanded(child: Divider(color: Colors.grey)),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _signInWithGoogle,
+                  icon: SvgPicture.asset('lib/assets/google_logo.svg', height: 22),
+                  label: const Text('Sign in with Google'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C2C2E),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account?",
+                      style: TextStyle(color: Colors.grey)),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => const SignUpScreen()));
+                    },
+                    child: const Text('Sign up'),
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                  )
+                ],
+              )
             ],
           ),
         ),
@@ -163,18 +268,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-InputDecoration _uberInputDecoration(BuildContext context,
-    {required String labelText}) {
+InputDecoration _uberInputDecoration(String labelText) {
   return InputDecoration(
     labelText: labelText,
-    labelStyle:
-        GoogleFonts.roboto(color: Theme.of(context).colorScheme.secondary),
-    enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+    labelStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+    filled: true,
+    fillColor: const Color(0xFF2C2C2E),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide.none,
     ),
-    focusedBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Theme.of(context).primaryColor),
-    ),
-    errorStyle: GoogleFonts.roboto(color: Theme.of(context).colorScheme.error),
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
   );
 }

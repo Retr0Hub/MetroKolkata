@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="470pt"
+   height="200pt"
+   viewBox="0 0 470 200"
+   preserveAspectRatio="xMidYMid meet"
+   id="svg22"
+   sodipodi:docname="Kolkata_Metro_System_Logo.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <defs
+     id="defs26" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="706"
+     id="namedview24"
+     showgrid="false"
+     inkscape:zoom="0.48268817"
+     inkscape:cx="458.84573"
+     inkscape:cy="116.03344"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g20"
+     inkscape:document-rotation="0" />
+  <metadata
+     id="metadata10">
+Created by potrace 1.15, written by Peter Selinger 2001-2017
+<rdf:RDF>
+  <cc:Work
+     rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type
+       rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+    <dc:title></dc:title>
+  </cc:Work>
+</rdf:RDF>
+</metadata>
+  <g
+     transform="matrix(0.1,0,0,-0.1,-3.1221353e-5,193.94975)"
+     fill="#000000"
+     stroke="none"
+     id="g20">
+    <g
+       id="g15"
+       transform="matrix(0.99787121,0,0,0.99787121,2705.1493,-57.874777)">
+      <path
+         d="M 551,1882 C 522,1851 401,1728 284,1609 L 70,1392 V 997 602 L 347,331 623,60 h 177 c 97,0 272,3 389,7 l 213,6 196,201 c 109,111 227,232 265,270 l 67,69 v 391 391 l -272,272 -273,272 H 995 605 Z m 1011,-317 236,-236 1,-328 2,-327 -33,-31 C 1750,626 1644,520 1533,408 l -203,-205 -327,-2 -328,-2 -231,233 -232,233 -7,330 -7,330 24,21 c 13,12 119,118 236,236 l 214,216 326,1 327,2 z"
+         id="path12"
+         style="fill:#008000" />
+      <path
+         d="m 486,1513 -211,-216 4,-303 3,-303 212,-211 211,-212 304,4 304,4 209,215 208,214 -6,305 -5,305 -212,207 -212,207 -299,1 H 696 Z m 970,-44 191,-190 7,-265 c 4,-145 3,-270 -1,-278 -4,-8 -90,-97 -189,-199 L 1282,353 1009,347 735,341 543,533 350,725 349,992 c 0,146 3,273 8,282 5,9 89,97 188,196 l 178,180 201,3 c 111,1 233,3 271,5 l 70,2 z"
+         id="path14"
+         style="fill:#008000" />
+      <path
+         d="m 698,1378 c -74,-95 -137,-178 -141,-185 -5,-7 26,-57 78,-125 48,-62 111,-146 141,-186 l 55,-73 114,2 c 63,1 115,4 115,8 0,4 -61,86 -135,182 -74,96 -133,179 -131,185 5,13 219,299 247,330 11,11 19,23 19,27 0,4 -51,7 -114,7 H 831 Z"
+         id="path16"
+         style="fill:#0000ff" />
+      <path
+         d="m 940,1180 c 0,-5 23,-36 177,-238 51,-67 93,-126 93,-130 0,-4 -13,-23 -28,-42 -40,-49 -227,-292 -236,-307 -6,-10 19,-13 111,-13 h 118 l 130,172 c 72,94 133,177 138,184 5,8 -17,44 -60,100 -78,99 -142,182 -181,236 -21,29 -36,38 -67,43 -45,6 -195,3 -195,-5 z"
+         id="path18"
+         style="fill:#ff0000" />
+    </g>
+    <g
+       transform="matrix(47.180049,0,0,-47.180049,-28293.058,36778.651)"
+       id="layer1">
+      <path
+         d="m 601.04374,778.20205 c -0.61524,-1.60328 6.73347,-15.68896 9.7687,-18.72419 1.63788,-1.63788 3.62928,-1.84364 17.84364,-1.84364 8.8,0 16,-0.25522 16,-0.56715 0,-0.31194 -1.4625,-2.00306 -3.25,-3.75806 -1.7875,-1.75499 -3.78604,-4.08728 -4.44119,-5.18285 -0.99796,-1.66881 -1.20074,-1.7205 -1.25,-0.31867 -0.0323,0.92031 1.10619,3.05781 2.53008,4.75 l 2.5889,3.07673 h -10.0889 c -7.54077,0 -10.08889,-0.32391 -10.08889,-1.28249 0,-0.70537 1.9125,-4.19287 4.25,-7.75 l 4.25,-6.46751 14.75,-0.27673 c 13.57299,-0.25465 14.74906,-0.13496 14.73822,1.5 -0.006,0.9772 -2.69295,5.93923 -5.96994,11.02673 l -5.95815,9.25 h -16.1134 c -8.86237,0 -15.9634,0.39555 -15.78006,0.879 0.67852,1.78926 8.00847,9.2792 8.55052,8.73715 0.30894,-0.30895 -0.64894,-2.14896 -2.12863,-4.08893 l -2.69034,-3.52722 h 10.05089 c 8.0888,0 10.05089,0.28156 10.05089,1.44232 0,0.79327 -2.14278,4.28077 -4.76174,7.75 l -4.76174,6.30768 -13.75877,0.27835 c -11.44006,0.23145 -13.85504,0.0274 -14.33009,-1.21052 z"
+         id="path3781"
+         style="fill:#ab2a33" />
+    </g>
+  </g>
+</svg>

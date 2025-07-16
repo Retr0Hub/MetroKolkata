@@ -5,24 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'create_profile_screen.dart';
 
-// For UI consistency, we can use the same input decoration style
-// from your other authentication screens.
-InputDecoration _uberInputDecoration(BuildContext context,
-    {required String labelText}) {
-  return InputDecoration(
-    labelText: labelText,
-    labelStyle:
-        GoogleFonts.roboto(color: Theme.of(context).colorScheme.secondary),
-    enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Theme.of(context).dividerColor),
-    ),
-    focusedBorder: UnderlineInputBorder(
-      borderSide: BorderSide(color: Theme.of(context).primaryColor),
-    ),
-    errorStyle: GoogleFonts.roboto(color: Theme.of(context).colorScheme.error),
-  );
-}
-
 class PhoneAuthScreen extends StatefulWidget {
   final String? initialPhoneNumber;
 
@@ -149,26 +131,29 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Phone Authentication'),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 _otpSent ? 'Enter the OTP' : 'Enter your phone number',
                 style: GoogleFonts.roboto(
-                    fontSize: 28, fontWeight: FontWeight.bold),
+                    fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               const SizedBox(height: 16),
               if (_otpSent)
                 Text(
                   'A 6-digit code has been sent to +91 ${_phoneController.text}',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: GoogleFonts.inter(color: Colors.grey.shade400, fontSize: 16),
                 ),
               const SizedBox(height: 32),
               // This is the main content that switches between phone and OTP
@@ -177,20 +162,31 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                 child: _otpSent ? _buildOtpForm() : _buildPhoneForm(),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed:
-                    _isLoading ? null : (_otpSent ? _verifyOtp : _sendOtp),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 3, color: Colors.black))
-                    : Text(
-                        _otpSent ? 'Verify & Continue' : 'Send OTP',
-                        style: GoogleFonts.roboto(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed:
+                      _isLoading ? null : (_otpSent ? _verifyOtp : _sendOtp),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 3, color: Colors.black))
+                      : Text(
+                          _otpSent ? 'Verify & Continue' : 'Send OTP',
+                          style: GoogleFonts.inter(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                ),
               ),
               if (_otpSent)
                 TextButton(
@@ -201,7 +197,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                             _isLoading = false;
                             _otpController.clear();
                           }),
-                  child: const Text('Change phone number'),
+                  child: const Text('Change phone number', style: TextStyle(color: Colors.white70)),
                 )
             ],
           ),
@@ -214,9 +210,11 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     return TextFormField(
       key: const ValueKey('phone'),
       controller: _phoneController,
-      decoration:
-          _uberInputDecoration(context, labelText: '10-digit mobile number')
-              .copyWith(prefixText: '+91 '),
+      style: const TextStyle(color: Colors.white, fontSize: 18),
+      decoration: _uberInputDecoration('10-digit mobile number').copyWith(
+        prefixText: '+91 ',
+        prefixStyle: const TextStyle(color: Colors.white, fontSize: 18),
+      ),
       keyboardType: TextInputType.phone,
       validator: (value) => (value?.length ?? 0) != 10
           ? 'Please enter a valid 10-digit number'
@@ -228,10 +226,25 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     return TextFormField(
       key: const ValueKey('otp'),
       controller: _otpController,
-      decoration: _uberInputDecoration(context, labelText: '6-digit OTP'),
+      style: const TextStyle(color: Colors.white, fontSize: 18),
+      decoration: _uberInputDecoration('6-digit OTP'),
       keyboardType: TextInputType.number,
       validator: (value) =>
           (value?.length ?? 0) != 6 ? 'OTP must be 6 digits' : null,
     );
   }
+}
+
+InputDecoration _uberInputDecoration(String labelText) {
+  return InputDecoration(
+    labelText: labelText,
+    labelStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+    filled: true,
+    fillColor: const Color(0xFF2C2C2E),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide.none,
+    ),
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
+  );
 }

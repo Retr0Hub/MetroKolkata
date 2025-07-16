@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:kolkatametro/app_theme.dart';
+import 'theme.dart';
 import 'package:provider/provider.dart';
 import 'theme_provider.dart';
 import 'auth_wrapper.dart';
-import 'firebase_options.dart';
-import 'splash_screen.dart';
+import 'firebase_options.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,10 +39,10 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Kolkata Metro',
-          theme: AppTheme.lightTheme(),
-          darkTheme: AppTheme.darkTheme(),
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
-          home: const SplashScreen(),
+          home: const AuthWrapper(),
           debugShowCheckedModeBanner: false,
         );
       },

@@ -34,8 +34,12 @@ flutter:
     - lib/assets/metro.jpg
     - lib/assets/map.svg
     - lib/assets/google_logo.svg
-    - lib/assets/google_logo.png
     - lib/assets/kolkata_metro_data.json
-    - lib/assets/ios_background.jpg
-
-
+    - lib/assets/trip.png
+    - lib/assets/shuttle.png
+    - lib/assets/rental.png
+    - lib/assets/intercity.png
+    - lib/assets/promo.png
+    - lib/assets/weekend.png
+    - lib/assets/welcomecircle.jpeg
+    - lib/assets/logo.svg
