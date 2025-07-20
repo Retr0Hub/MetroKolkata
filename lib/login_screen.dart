@@ -125,6 +125,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _navigateBackWithTransition() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => _navigateBackWithTransition(),
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   padding: EdgeInsets.zero,
                   alignment: Alignment.centerLeft,

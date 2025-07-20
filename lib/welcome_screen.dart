@@ -219,7 +219,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Exit animations
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -0.3), // Float up by ~50px
+      end: const Offset(0, -0.6), // Float up to 200px position
     ).animate(CurvedAnimation(
       parent: _exitController,
       curve: Curves.easeInOutCubic,
@@ -271,15 +271,26 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 300),
+          reverseTransitionDuration: const Duration(milliseconds: 800),
           pageBuilder: (context, animation, secondaryAnimation) {
             return _WelcomeTextWrapper(
               child: destination,
               animation: animation,
+              onBack: _handleBackTransition,
             );
           },
         ),
       );
     }
+  }
+
+  void _handleBackTransition() {
+    // Reset exit state and restart welcome animations
+    setState(() {
+      _isExiting = false;
+    });
+    _exitController.reset();
+    _startAnimations();
   }
 
   @override
@@ -651,12 +662,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   ),
                                 ),
                                 const TextSpan(text: ' by Flutter Developer'),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                                            ],
+            ),
+          ),
+        ),
+      ),
+    );
+  },
                   ),
                 
                 const SizedBox(height: 40),
@@ -701,10 +713,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 class _WelcomeTextWrapper extends StatefulWidget {
   final Widget child;
   final Animation<double> animation;
+  final VoidCallback? onBack;
 
   const _WelcomeTextWrapper({
     required this.child,
     required this.animation,
+    this.onBack,
   });
 
   @override
@@ -773,20 +787,26 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final metroColor = isDarkMode ? Colors.white : Colors.black;
 
-    return Scaffold(
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
-      body: FadeTransition(
-        opacity: widget.animation,
-        child: Column(
-          children: [
-                                      // Welcome text header - positioned exactly where it floats to
+    return PopScope(
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          widget.onBack?.call();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        body: FadeTransition(
+          opacity: widget.animation,
+          child: Column(
+            children: [
+                                      // Welcome text header - positioned at 200px from top
              Container(
                width: double.infinity,
                padding: const EdgeInsets.only(
-                 top: 250, // Position where text ends up after floating up 50px from ~300px
+                 top: 200, // 200px from top as requested
                  left: 48,
                  right: 48,
-                 bottom: 16,
+                 bottom: 20,
                ),
                child: AnimatedBuilder(
                  animation: _headerController,
