@@ -794,19 +794,35 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       },
       child: Scaffold(
         backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        body: FadeTransition(
-          opacity: widget.animation,
-          child: Column(
-            children: [
-                                      // Welcome text header - positioned at 200px from top
-             Container(
-               width: double.infinity,
-               padding: const EdgeInsets.only(
-                 top: 200, // 200px from top as requested
-                 left: 48,
-                 right: 48,
-                 bottom: 20,
-               ),
+        body: Stack(
+          children: [
+            // Main content with login/signup form
+            FadeTransition(
+              opacity: widget.animation,
+              child: AnimatedBuilder(
+                animation: _headerController,
+                builder: (context, child) {
+                  return SlideTransition(
+                    position: _contentSlide,
+                    child: FadeTransition(
+                      opacity: _contentOpacity,
+                      child: widget.child,
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Welcome text overlay - positioned below back button
+            FadeTransition(
+              opacity: widget.animation,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(
+                  top: 80, // Below back button area
+                  left: 48,
+                  right: 48,
+                  bottom: 20,
+                ),
                child: AnimatedBuilder(
                  animation: _headerController,
                  builder: (context, child) {
@@ -846,23 +862,8 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                  },
                ),
              ),
-            // Content area with the actual login/signup screen
-            Expanded(
-              child: AnimatedBuilder(
-                animation: _headerController,
-                builder: (context, child) {
-                  return SlideTransition(
-                    position: _contentSlide,
-                    child: FadeTransition(
-                      opacity: _contentOpacity,
-                      child: widget.child,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+           ],
+         ),
       ),
     );
   }
