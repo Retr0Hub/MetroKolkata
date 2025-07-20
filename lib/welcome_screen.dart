@@ -219,10 +219,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Exit animations
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -1.5),
+      end: const Offset(0, -0.8), // Move to top but stay visible
     ).animate(CurvedAnimation(
       parent: _exitController,
-      curve: Curves.easeInCubic,
+      curve: Curves.easeInOutCubic,
     ));
 
     _exitElementsOpacity = Tween<double>(
@@ -270,12 +270,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => destination,
           transitionDuration: const Duration(milliseconds: 300),
           pageBuilder: (context, animation, secondaryAnimation) {
-            return FadeTransition(
-              opacity: animation,
+            return _WelcomeTextWrapper(
               child: destination,
+              animation: animation,
             );
           },
         ),
@@ -687,6 +686,164 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         child: Text(
           text,
           style: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+}
+
+class _WelcomeTextWrapper extends StatefulWidget {
+  final Widget child;
+  final Animation<double> animation;
+
+  const _WelcomeTextWrapper({
+    required this.child,
+    required this.animation,
+  });
+
+  @override
+  State<_WelcomeTextWrapper> createState() => _WelcomeTextWrapperState();
+}
+
+class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
+    with TickerProviderStateMixin {
+  late AnimationController _headerController;
+  late Animation<double> _headerOpacity;
+  late Animation<Offset> _headerSlide;
+  late Animation<double> _contentOpacity;
+  late Animation<Offset> _contentSlide;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _headerController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _headerOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+    ));
+
+    _headerSlide = Tween<Offset>(
+      begin: const Offset(0, -0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
+    ));
+
+    _contentOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+    ));
+
+    _contentSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.3, 1.0, curve: Curves.easeOutCubic),
+    ));
+
+    // Start the header animation after the page transition begins
+    widget.animation.addListener(_onPageAnimationChange);
+  }
+
+  void _onPageAnimationChange() {
+    if (widget.animation.value > 0.3 && !_headerController.isAnimating && _headerController.value == 0) {
+      _headerController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.animation.removeListener(_onPageAnimationChange);
+    _headerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final metroColor = isDarkMode ? Colors.white : Colors.black;
+
+    return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      body: FadeTransition(
+        opacity: widget.animation,
+        child: Column(
+          children: [
+            // Welcome text header that stays at top
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(
+                top: 60,
+                left: 48,
+                right: 48,
+                bottom: 20,
+              ),
+              child: AnimatedBuilder(
+                animation: _headerController,
+                builder: (context, child) {
+                  return SlideTransition(
+                    position: _headerSlide,
+                    child: FadeTransition(
+                      opacity: _headerOpacity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome To',
+                            style: TextStyle(
+                              fontFamily: 'Arial',
+                              fontSize: 20,
+                              color: metroColor.withOpacity(0.8),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            'Kolkata Metro',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 32,
+                              color: metroColor,
+                              fontFamily: 'Arial',
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Content area with the actual login/signup screen
+            Expanded(
+              child: AnimatedBuilder(
+                animation: _headerController,
+                builder: (context, child) {
+                  return SlideTransition(
+                    position: _contentSlide,
+                    child: FadeTransition(
+                      opacity: _contentOpacity,
+                      child: widget.child,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
