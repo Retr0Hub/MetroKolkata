@@ -300,7 +300,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     final backgroundColor = isDarkMode ? Colors.black : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black;
     final borderColor = isDarkMode ? Colors.white : Colors.black;
-    final metroColor = isDarkMode ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 255, 255, 255);
+    final metroColor = isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -350,7 +350,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             ),
 
           Padding(
-            padding: const EdgeInsets.only(top: 200.0),
+            padding: const EdgeInsets.only(top: 225.0),
             child: Column(
               children: [
                 const SizedBox(height: 100),
