@@ -219,7 +219,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Exit animations
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -1.2), // Move to exact top position
+      end: const Offset(0, -0.3), // Float up by ~50px
     ).animate(CurvedAnimation(
       parent: _exitController,
       curve: Curves.easeInOutCubic,
@@ -371,8 +371,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                 'Welcome To',
                                 style: TextStyle(
                                   fontFamily: 'Arial',
-                                  fontSize: 20,
-                                  color: metroColor.withOpacity(0.8),
+                                  fontSize: 26,
+                                  color: metroColor,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 textAlign: TextAlign.left,
@@ -384,7 +384,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   'Kolkata Metro',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 32,
+                                    fontSize: 46,
                                     color: metroColor,
                                     fontFamily: 'Arial',
                                   ),
@@ -715,7 +715,6 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
     with TickerProviderStateMixin {
   late AnimationController _headerController;
   late Animation<double> _headerOpacity;
-  late Animation<Offset> _headerSlide;
   late Animation<double> _contentOpacity;
   late Animation<Offset> _contentSlide;
 
@@ -733,15 +732,7 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _headerController,
-      curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
-    ));
-
-    _headerSlide = Tween<Offset>(
-      begin: const Offset(0, -0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
     ));
 
     _contentOpacity = Tween<double>(
@@ -749,15 +740,15 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _headerController,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
     ));
 
     _contentSlide = Tween<Offset>(
-      begin: const Offset(0, 0.3),
+      begin: const Offset(0, 0.2),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _headerController,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeOutCubic),
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
     ));
 
     // Start the header animation after the page transition begins
@@ -788,57 +779,54 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
         opacity: widget.animation,
         child: Column(
           children: [
-                         // Welcome text header that stays at top
+                                      // Welcome text header - positioned exactly where it floats to
              Container(
                width: double.infinity,
                padding: const EdgeInsets.only(
-                 top: 50,
+                 top: 250, // Position where text ends up after floating up 50px from ~300px
                  left: 48,
                  right: 48,
                  bottom: 16,
                ),
-              child: AnimatedBuilder(
-                animation: _headerController,
-                builder: (context, child) {
-                  return SlideTransition(
-                    position: _headerSlide,
-                    child: FadeTransition(
-                      opacity: _headerOpacity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                 children: [
-                           Text(
-                             'Welcome To',
+               child: AnimatedBuilder(
+                 animation: _headerController,
+                 builder: (context, child) {
+                   return FadeTransition(
+                     opacity: _headerOpacity,
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(
+                           'Welcome To',
+                           style: TextStyle(
+                             fontFamily: 'Arial',
+                             fontSize: 26,
+                             color: metroColor,
+                             fontWeight: FontWeight.w500,
+                           ),
+                           textAlign: TextAlign.left,
+                         ),
+                         FittedBox(
+                           fit: BoxFit.scaleDown,
+                           alignment: Alignment.centerLeft,
+                           child: Text(
+                             'Kolkata Metro',
                              style: TextStyle(
+                               fontWeight: FontWeight.bold,
+                               fontSize: 46,
+                               color: metroColor,
                                fontFamily: 'Arial',
-                               fontSize: 20,
-                               color: metroColor.withOpacity(0.8),
-                               fontWeight: FontWeight.w500,
                              ),
                              textAlign: TextAlign.left,
+                             maxLines: 1,
                            ),
-                           FittedBox(
-                             fit: BoxFit.scaleDown,
-                             alignment: Alignment.centerLeft,
-                             child: Text(
-                               'Kolkata Metro',
-                               style: TextStyle(
-                                 fontWeight: FontWeight.bold,
-                                 fontSize: 32,
-                                 color: metroColor,
-                                 fontFamily: 'Arial',
-                               ),
-                               textAlign: TextAlign.left,
-                               maxLines: 1,
-                             ),
-                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+                         ),
+                       ],
+                     ),
+                   );
+                 },
+               ),
+             ),
             // Content area with the actual login/signup screen
             Expanded(
               child: AnimatedBuilder(
