@@ -15,7 +15,8 @@ class FirebaseService {
         await _auth.signInWithCredential(credential);
       },
       verificationFailed: (FirebaseAuthException e) {
-        print("OTP failed: ${e.message}");
+        // Log error securely without exposing sensitive details
+        debugPrint("OTP verification failed");
       },
       codeSent: (String verificationId, int? resendToken) {
         _verificationId = verificationId;
@@ -38,7 +39,8 @@ class FirebaseService {
       await _auth.signInWithCredential(credential);
       return true;
     } catch (e) {
-      print("OTP verification failed: $e");
+      // Log error securely without exposing sensitive details
+      debugPrint("OTP verification failed");
       return false;
     }
   }
