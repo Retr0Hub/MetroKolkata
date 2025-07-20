@@ -864,6 +864,7 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
           ],
         ),
       ),
+    )
     );
   }
 }
