@@ -219,7 +219,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Exit animations
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -0.8), // Move to top but stay visible
+      end: const Offset(0, -1.2), // Move to exact top position
     ).animate(CurvedAnimation(
       parent: _exitController,
       curve: Curves.easeInOutCubic,
@@ -353,7 +353,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             padding: const EdgeInsets.only(top: 200.0),
             child: Column(
               children: [
-                const SizedBox(height: 120),
+                const SizedBox(height: 100),
                 // Animated welcome text with exit transition
                 AnimatedBuilder(
                   animation: _isExiting ? _exitController : _textController,
@@ -361,48 +361,52 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     if (_isExiting) {
                       return SlideTransition(
                         position: _exitTextSlide,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 48),
-                              child: Text(
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
                                 'Welcome To',
                                 style: TextStyle(
                                   fontFamily: 'Arial',
-                                  fontSize: 26,
-                                  color: metroColor,
+                                  fontSize: 20,
+                                  color: metroColor.withOpacity(0.8),
                                   fontWeight: FontWeight.w500,
                                 ),
                                 textAlign: TextAlign.left,
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 48),
-                              child: Text(
-                                'Kolkata Metro',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 46,
-                                  color: metroColor,
-                                  fontFamily: 'Arial',
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Kolkata Metro',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 32,
+                                    color: metroColor,
+                                    fontFamily: 'Arial',
+                                  ),
+                                  textAlign: TextAlign.left,
+                                  maxLines: 1,
                                 ),
-                                textAlign: TextAlign.left,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     } else {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SlideTransition(
-                            position: _titleSlide,
-                            child: FadeTransition(
-                              opacity: _titleOpacity,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 48),
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 48),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SlideTransition(
+                              position: _titleSlide,
+                              child: FadeTransition(
+                                opacity: _titleOpacity,
                                 child: Text(
                                   'Welcome To',
                                   style: TextStyle(
@@ -415,32 +419,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                 ),
                               ),
                             ),
-                          ),
-                          SlideTransition(
-                            position: _subtitleSlide,
-                            child: FadeTransition(
-                              opacity: _subtitleOpacity,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 48),
-                                child: Text(
-                                  'Kolkata Metro',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 46,
-                                    color: metroColor,
-                                    fontFamily: 'Arial',
+                            SlideTransition(
+                              position: _subtitleSlide,
+                              child: FadeTransition(
+                                opacity: _subtitleOpacity,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Kolkata Metro',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 46,
+                                      color: metroColor,
+                                      fontFamily: 'Arial',
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    maxLines: 1,
                                   ),
-                                  textAlign: TextAlign.left,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     }
                   },
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 30),
                 // Animated logo with exit transition
                 if (!_isExiting)
                   AnimatedBuilder(
@@ -489,7 +495,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     },
                   ),
                 
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 const Spacer(),
                 
                 // Animated login button with exit transition
@@ -653,7 +659,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     },
                   ),
                 
-                const SizedBox(height: 98),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -782,15 +788,15 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
         opacity: widget.animation,
         child: Column(
           children: [
-            // Welcome text header that stays at top
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(
-                top: 60,
-                left: 48,
-                right: 48,
-                bottom: 20,
-              ),
+                         // Welcome text header that stays at top
+             Container(
+               width: double.infinity,
+               padding: const EdgeInsets.only(
+                 top: 50,
+                 left: 48,
+                 right: 48,
+                 bottom: 16,
+               ),
               child: AnimatedBuilder(
                 animation: _headerController,
                 builder: (context, child) {
@@ -800,27 +806,32 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                       opacity: _headerOpacity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome To',
-                            style: TextStyle(
-                              fontFamily: 'Arial',
-                              fontSize: 20,
-                              color: metroColor.withOpacity(0.8),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                          Text(
-                            'Kolkata Metro',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 32,
-                              color: metroColor,
-                              fontFamily: 'Arial',
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
+                                                 children: [
+                           Text(
+                             'Welcome To',
+                             style: TextStyle(
+                               fontFamily: 'Arial',
+                               fontSize: 20,
+                               color: metroColor.withOpacity(0.8),
+                               fontWeight: FontWeight.w500,
+                             ),
+                             textAlign: TextAlign.left,
+                           ),
+                           FittedBox(
+                             fit: BoxFit.scaleDown,
+                             alignment: Alignment.centerLeft,
+                             child: Text(
+                               'Kolkata Metro',
+                               style: TextStyle(
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: 32,
+                                 color: metroColor,
+                                 fontFamily: 'Arial',
+                               ),
+                               textAlign: TextAlign.left,
+                               maxLines: 1,
+                             ),
+                           ),
                         ],
                       ),
                     ),
