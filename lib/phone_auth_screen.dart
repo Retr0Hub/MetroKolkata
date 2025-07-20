@@ -28,9 +28,14 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
     super.initState();
     if (widget.initialPhoneNumber != null) {
       _phoneController.text = widget.initialPhoneNumber!;
-      // Use a post-frame callback to ensure the widget is built before showing UI
+      // Use a post-frame callback to ensure the widget is built and form is ready
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _sendOtp();
+        if (mounted && _formKey.currentState != null) {
+          // Validate the pre-filled phone number before sending OTP
+          if (_formKey.currentState!.validate()) {
+            _sendOtp();
+          }
+        }
       });
     }
   }

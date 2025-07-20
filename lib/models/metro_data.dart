@@ -76,7 +76,20 @@ class Timings {
 }
 
 class DayTimings {
-    DayTimings();
-    factory DayTimings.fromJson(Map<String, dynamic> json) => DayTimings();
+    final String? firstTrain;
+    final String? lastTrain;
+    final String? frequency;
+
+    DayTimings({
+        this.firstTrain,
+        this.lastTrain, 
+        this.frequency,
+    });
+
+    factory DayTimings.fromJson(Map<String, dynamic> json) => DayTimings(
+        firstTrain: json["first_train"]?.toString(),
+        lastTrain: json["last_train"]?.toString(),
+        frequency: json["frequency"]?.toString(),
+    );
 }
 
