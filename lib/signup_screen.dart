@@ -118,7 +118,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _navigateBackWithTransition() {
-    Navigator.pop(context);
+    // Always go back to welcome screen, not login
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
@@ -147,8 +148,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               padding: EdgeInsets.zero,
             ),
           ),
-          // Scrollable content
-          SingleChildScrollView(
+          // Main content (no scrolling)
+          Padding(
             padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
             child: Form(
               key: _formKey,
@@ -161,36 +162,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: textColor),
-                ),
-              const SizedBox(height: 32),
+                                ),
+                const SizedBox(height: 24),
                                               TextFormField(
                   controller: _nameController,
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Full Name', inputFillColor, labelColor),
-                                  validator: (value) =>
+                                                    validator: (value) =>
                       value!.isEmpty ? 'Please enter your name' : null,
-              ),
-              const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 12),
                                               TextFormField(
                   controller: _emailController,
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Email', inputFillColor, labelColor),
                 keyboardType: TextInputType.emailAddress,
                                   validator: (value) => (value == null || !value.contains('@'))
-                      ? 'Please enter a valid email'
+                                            ? 'Please enter a valid email'
                       : null,
-              ),
-              const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 12),
                                               TextFormField(
                   controller: _passwordController,
                   obscureText: true,
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                                   validator: (value) => (value == null || value.length < 6)
-                      ? 'Password must be at least 6 characters'
+                                            ? 'Password must be at least 6 characters'
                       : null,
-              ),
-              const SizedBox(height: 40),
+                ),
+                const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
