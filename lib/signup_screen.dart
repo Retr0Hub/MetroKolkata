@@ -109,16 +109,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Fixed back button at top
+          // Fixed back button at top - aligned with content
           Positioned(
             top: 60,
-            left: 24,
-            child: IconButton(
-              onPressed: () => _navigateBackWithTransition(),
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+            left: 12, // More left to align with text content
+                          child: IconButton(
+                onPressed: () => _navigateBackWithTransition(),
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
               padding: EdgeInsets.zero,
             ),
           ),
@@ -130,25 +130,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-              Text(
-                "Create your account",
-                style: GoogleFonts.inter(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
+                              Text(
+                  "Create your account",
+                  style: GoogleFonts.inter(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
               const SizedBox(height: 32),
-              TextFormField(
-                controller: _nameController,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                              TextFormField(
+                  controller: _nameController,
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
                 decoration: _uberInputDecoration('Full Name'),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter your name' : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                              TextFormField(
+                  controller: _emailController,
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
                 decoration: _uberInputDecoration('Email'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) => (value == null || !value.contains('@'))
@@ -156,10 +156,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                              TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
                 decoration: _uberInputDecoration('Password'),
                 validator: (value) => (value == null || value.length < 6)
                     ? 'Password must be at least 6 characters'
@@ -171,8 +171,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _signUpWithEmail,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -183,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
-                              strokeWidth: 3, color: Colors.black))
+                              strokeWidth: 3, color: Colors.white))
                       : Text(
                           'Sign Up',
                           style: GoogleFonts.inter(
@@ -210,8 +210,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   icon: SvgPicture.asset('lib/assets/google_logo.svg', height: 22),
                   label: const Text('Sign up with Google'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C2C2E),
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.grey.shade100,
+                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
@@ -230,9 +230,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 InputDecoration _uberInputDecoration(String labelText) {
   return InputDecoration(
     labelText: labelText,
-    labelStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+    labelStyle: GoogleFonts.inter(color: Colors.grey.shade600),
     filled: true,
-    fillColor: const Color(0xFF2C2C2E),
+    fillColor: Colors.grey.shade50,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide.none,
