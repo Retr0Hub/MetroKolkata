@@ -404,7 +404,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   );
                 },
               ),
-            
+            ),
           // Other elements fade out during exit  
           if (_isExiting)
             AnimatedBuilder(
@@ -850,10 +850,10 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                  },
                ),
              ),
+             ),
            ],
          ),
       ),
-    )
     );
   }
 }
