@@ -43,3 +43,4 @@ flutter:
     - lib/assets/weekend.png
     - lib/assets/welcomecircle.jpeg
     - lib/assets/logo.svg
+    - lib/assets/loading.gif
