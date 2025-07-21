@@ -108,17 +108,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonBgColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonTextColor = isDarkMode ? Colors.black : Colors.white;
+    final inputFillColor = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey.shade50;
+    final labelColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+    final googleButtonBg = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey.shade100;
+    final googleButtonText = isDarkMode ? Colors.white : Colors.black;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // Fixed back button at top - aligned with content
           Positioned(
             top: 60,
             left: 12, // More left to align with text content
-                          child: IconButton(
-                onPressed: () => _navigateBackWithTransition(),
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                                      child: IconButton(
+              onPressed: () => _navigateBackWithTransition(),
+              icon: Icon(Icons.arrow_back, color: textColor),
               padding: EdgeInsets.zero,
             ),
           ),
@@ -130,37 +140,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                              Text(
+                                              Text(
                   "Create your account",
                   style: GoogleFonts.inter(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black),
+                      color: textColor),
                 ),
               const SizedBox(height: 32),
-                              TextFormField(
+                                              TextFormField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                decoration: _uberInputDecoration('Full Name'),
+                  style: TextStyle(color: textColor, fontSize: 18),
+                  decoration: _uberInputDecoration('Full Name', inputFillColor, labelColor),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter your name' : null,
               ),
               const SizedBox(height: 16),
-                              TextFormField(
+                                              TextFormField(
                   controller: _emailController,
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                decoration: _uberInputDecoration('Email'),
+                  style: TextStyle(color: textColor, fontSize: 18),
+                  decoration: _uberInputDecoration('Email', inputFillColor, labelColor),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) => (value == null || !value.contains('@'))
                     ? 'Please enter a valid email'
                     : null,
               ),
               const SizedBox(height: 16),
-                              TextFormField(
+                                              TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                decoration: _uberInputDecoration('Password'),
+                  style: TextStyle(color: textColor, fontSize: 18),
+                  decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                 validator: (value) => (value == null || value.length < 6)
                     ? 'Password must be at least 6 characters'
                     : null,
@@ -171,8 +181,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _signUpWithEmail,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: buttonBgColor,
+                    foregroundColor: buttonTextColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -183,7 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
-                              strokeWidth: 3, color: Colors.white))
+                              strokeWidth: 3, color: buttonTextColor))
                       : Text(
                           'Sign Up',
                           style: GoogleFonts.inter(
@@ -210,8 +220,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   icon: SvgPicture.asset('lib/assets/google_logo.svg', height: 22),
                   label: const Text('Sign up with Google'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade100,
-                    foregroundColor: Colors.black,
+                    backgroundColor: googleButtonBg,
+                    foregroundColor: googleButtonText,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
@@ -227,12 +237,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-InputDecoration _uberInputDecoration(String labelText) {
+InputDecoration _uberInputDecoration(String labelText, Color fillColor, Color labelColor) {
   return InputDecoration(
     labelText: labelText,
-    labelStyle: GoogleFonts.inter(color: Colors.grey.shade600),
+    labelStyle: GoogleFonts.inter(color: labelColor),
     filled: true,
-    fillColor: Colors.grey.shade50,
+    fillColor: fillColor,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide.none,
