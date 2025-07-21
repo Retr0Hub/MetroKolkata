@@ -38,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onIdentifierChanged() {
     final text = _identifierController.text.trim();
-    // Check for a more complete email format (contains @ and a dot after @)
-    final bool isEmail = text.contains('@') && text.contains('.') && text.indexOf('@') < text.lastIndexOf('.');
+    // Check if input contains any letter (emails can have letters, phone numbers are only digits)
+    final bool isEmail = text.isNotEmpty && RegExp(r'[a-zA-Z]').hasMatch(text);
     if (isEmail != _isEmail) {
       setState(() {
         _isEmail = isEmail;
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Invalid phone number')));
+          content: Text('Please enter a valid 10-digit phone number.')));
     }
   }
 
@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.text,
                                   validator: (value) =>
                       value!.isEmpty
-                          ? 'Email or phone required'
+                          ? 'Please enter your email or phone number'
                           : null,
               ),
               // Conditionally show the password field and forgot password button
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: textColor, fontSize: 18),
                             decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                             validator: (value) => _isEmail && (value == null || value.isEmpty)
-                                ? 'Password required'
+                                ? 'Please enter a password'
                                 : null,
                           ),
                           TextButton(

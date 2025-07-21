@@ -153,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Full Name', inputFillColor, labelColor),
                                   validator: (value) =>
-                      value!.isEmpty ? 'Name required' : null,
+                      value!.isEmpty ? 'Please enter your name' : null,
               ),
               const SizedBox(height: 16),
                                               TextFormField(
@@ -162,7 +162,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: _uberInputDecoration('Email', inputFillColor, labelColor),
                 keyboardType: TextInputType.emailAddress,
                                   validator: (value) => (value == null || !value.contains('@'))
-                      ? 'Valid email required'
+                      ? 'Please enter a valid email'
                       : null,
               ),
               const SizedBox(height: 16),
@@ -172,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                                   validator: (value) => (value == null || value.length < 6)
-                      ? 'Password too short (min 6)'
+                      ? 'Password must be at least 6 characters'
                       : null,
               ),
               const SizedBox(height: 40),
