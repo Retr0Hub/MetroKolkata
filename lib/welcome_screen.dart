@@ -800,13 +800,13 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                 },
               ),
             ),
-            // Welcome text overlay - positioned below back button
+            // Welcome text overlay - positioned to match exit animation
             FadeTransition(
               opacity: widget.animation,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(
-                  top: 80, // Below back button area
+                  top: 160, // Match the exit animation final position
                   left: 48,
                   right: 48,
                   bottom: 20,
