@@ -60,13 +60,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             top: 60,
             left: 12,
             child: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                // Direct pop without triggering reverse text animation
+                Navigator.of(context).pop();
+              },
               icon: Icon(Icons.arrow_back, color: textColor),
               padding: EdgeInsets.zero,
             ),
           ),
-          // Main content (no scrolling)
-          Padding(
+          // Main content with keyboard handling
+          SingleChildScrollView(
             padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
         child: Form(
           key: _formKey,
@@ -96,9 +99,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   }
                   return null;
                 },
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
+                              ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
                 onPressed: _isLoading ? null : _sendPasswordResetEmail,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonBgColor,
@@ -117,9 +122,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           width: 24,
                           height: 24,
                         ))
-                    : Text('Send Reset Link',
-                        style: GoogleFonts.inter(
-                            fontSize: 18, fontWeight: FontWeight.bold),),
+                                          : Text('Send Reset Link',
+                          style: GoogleFonts.inter(
+                              fontSize: 18, fontWeight: FontWeight.bold),),
+                ),
               ),
             ],
           ),

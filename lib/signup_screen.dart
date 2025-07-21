@@ -148,8 +148,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               padding: EdgeInsets.zero,
             ),
           ),
-          // Main content (no scrolling)
-          Padding(
+          // Main content with keyboard handling
+          SingleChildScrollView(
             padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
             child: Form(
               key: _formKey,
