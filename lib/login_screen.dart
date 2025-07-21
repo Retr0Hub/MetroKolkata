@@ -230,11 +230,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
-                              strokeWidth: 3, color: buttonTextColor))
+                              strokeWidth: 3, 
+                              valueColor: AlwaysStoppedAnimation<Color>(buttonTextColor)))
                       : Text(
                           _isEmail ? 'Log In' : 'Continue',
                           style: GoogleFonts.inter(
