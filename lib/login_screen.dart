@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 24,
                           height: 24,
                           child: Image.asset(
-                            'lib/assets/loading.png',
+                            'lib/assets/loading.gif',
                             width: 24,
                             height: 24,
                           ))
