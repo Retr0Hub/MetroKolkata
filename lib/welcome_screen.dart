@@ -285,11 +285,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _handleBackTransition() {
-    // Reset exit state and restart welcome animations
+    // Reset exit state and restart welcome animations just like initial startup
     setState(() {
       _isExiting = false;
     });
+    
+    // Reset all controllers to initial state
+    _imageController.reset();
+    _textController.reset();
+    _logoController.reset();
+    _buttonController.reset();
+    _creditController.reset();
     _exitController.reset();
+    
+    // Restart the full welcome animation sequence
     _startAnimations();
   }
 
@@ -496,26 +505,48 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   const SizedBox(height: 15),
                   const Spacer(),
                   
-                  // Static login button (no animation to prevent shrinking)
-                  _buildButton(
-                    context,
-                    'Login',
-                    Colors.white,
-                    Colors.black,
-                    () => _navigateWithTransition(const LoginScreen()),
-                    borderColor: Colors.black,
+                  // Animated login button (for welcome screen entry)
+                  AnimatedBuilder(
+                    animation: _buttonController,
+                    builder: (context, child) {
+                      return SlideTransition(
+                        position: _loginButtonSlide,
+                        child: FadeTransition(
+                          opacity: _loginButtonOpacity,
+                          child: _buildButton(
+                            context,
+                            'Login',
+                            Colors.white,
+                            Colors.black,
+                            () => _navigateWithTransition(const LoginScreen()),
+                            borderColor: Colors.black,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   
                   const SizedBox(height: 10),
                   
-                  // Static signup button (no animation to prevent shrinking)
-                  _buildButton(
-                    context,
-                    'Create an account',
-                    Colors.black,
-                    Colors.white,
-                    () => _navigateWithTransition(const SignUpScreen()),
-                    borderColor: borderColor,
+                  // Animated signup button (for welcome screen entry)
+                  AnimatedBuilder(
+                    animation: _buttonController,
+                    builder: (context, child) {
+                      return SlideTransition(
+                        position: _signupButtonSlide,
+                        child: FadeTransition(
+                          opacity: _signupButtonOpacity,
+                          child: _buildButton(
+                            context,
+                            'Create an account',
+                            Colors.black,
+                            Colors.white,
+                            () => _navigateWithTransition(const SignUpScreen()),
+                            borderColor: borderColor,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   
                   const SizedBox(height: 20),

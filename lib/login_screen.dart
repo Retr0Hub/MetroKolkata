@@ -362,7 +362,7 @@ class _PostAuthWrapperState extends State<_PostAuthWrapper>
     
     _textCenterSlide = Tween<Offset>(
       begin: Offset.zero, // Start at current position (120px from top)
-      end: const Offset(0, 100), // Move to center (approximately)
+      end: const Offset(0, 200), // Move to vertical center of screen
     ).animate(CurvedAnimation(
       parent: _textMoveController,
       curve: Curves.easeInOutCubic,
@@ -438,29 +438,29 @@ class _PostAuthWrapperState extends State<_PostAuthWrapper>
                           right: 24,
                           bottom: 20,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center, // Center the text
-                          children: [
-                            Text(
-                              'Welcome To',
-                              style: TextStyle(
-                                fontFamily: 'Arial',
-                                fontSize: 26,
-                                color: metroColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              'Kolkata Metro',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 46,
-                                color: metroColor,
-                                fontFamily: 'Arial',
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                                                 child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start, // Keep text left-aligned
+                           children: [
+                             Text(
+                               'Welcome To',
+                               style: TextStyle(
+                                 fontFamily: 'Arial',
+                                 fontSize: 26,
+                                 color: metroColor,
+                                 fontWeight: FontWeight.w500,
+                               ),
+                               textAlign: TextAlign.left,
+                             ),
+                             Text(
+                               'Kolkata Metro',
+                               style: TextStyle(
+                                 fontWeight: FontWeight.bold,
+                                 fontSize: 46,
+                                 color: metroColor,
+                                 fontFamily: 'Arial',
+                               ),
+                               textAlign: TextAlign.left,
+                             ),
                           ],
                         ),
                       ),
