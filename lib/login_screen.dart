@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'phone_auth_screen.dart';
 import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -100,7 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
 
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        // Navigate with post-login transition
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 300),
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return _PostAuthWrapper(
+                child: HomeScreen(),
+                animation: animation,
+              );
+            },
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in with Google: ${e.toString()}')),
@@ -309,4 +324,154 @@ InputDecoration _uberInputDecoration(String labelText, Color fillColor, Color la
     ),
     floatingLabelBehavior: FloatingLabelBehavior.auto,
   );
+}
+
+class _PostAuthWrapper extends StatefulWidget {
+  final Widget child;
+  final Animation<double> animation;
+
+  const _PostAuthWrapper({
+    required this.child,
+    required this.animation,
+  });
+
+  @override
+  State<_PostAuthWrapper> createState() => _PostAuthWrapperState();
+}
+
+class _PostAuthWrapperState extends State<_PostAuthWrapper>
+    with TickerProviderStateMixin {
+  late AnimationController _textMoveController;
+  late AnimationController _delayController;
+  late Animation<Offset> _textCenterSlide;
+  late Animation<double> _textOpacity;
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    _textMoveController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    
+    _delayController = AnimationController(
+      duration: const Duration(milliseconds: 2000), // 2 second delay
+      vsync: this,
+    );
+    
+    _textCenterSlide = Tween<Offset>(
+      begin: Offset.zero, // Start at current position (120px from top)
+      end: const Offset(0, 100), // Move to center (approximately)
+    ).animate(CurvedAnimation(
+      parent: _textMoveController,
+      curve: Curves.easeInOutCubic,
+    ));
+    
+    _textOpacity = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _delayController,
+      curve: const Interval(0.8, 1.0, curve: Curves.easeOut),
+    ));
+    
+    // Start the sequence
+    _startPostAuthSequence();
+  }
+  
+  void _startPostAuthSequence() async {
+    // First, move text to center
+    _textMoveController.forward();
+    
+    // Wait for move animation to complete
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    // Start 2 second delay timer and fade at the end
+    _delayController.forward();
+    
+    // Wait for delay to complete
+    await Future.delayed(const Duration(milliseconds: 2000));
+    
+    // Navigate to home screen
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => widget.child),
+      );
+    }
+  }
+  
+  @override
+  void dispose() {
+    _textMoveController.dispose();
+    _delayController.dispose();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final metroColor = isDarkMode ? Colors.white : Colors.black;
+    
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // Welcome text that moves to center and stays
+          AnimatedBuilder(
+            animation: _textMoveController,
+            builder: (context, child) {
+              return AnimatedBuilder(
+                animation: _delayController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _textCenterSlide.value.dy),
+                    child: FadeTransition(
+                      opacity: _textOpacity,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(
+                          top: 120, // Start from login screen position
+                          left: 24,
+                          right: 24,
+                          bottom: 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center, // Center the text
+                          children: [
+                            Text(
+                              'Welcome To',
+                              style: TextStyle(
+                                fontFamily: 'Arial',
+                                fontSize: 26,
+                                color: metroColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              'Kolkata Metro',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 46,
+                                color: metroColor,
+                                fontFamily: 'Arial',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
