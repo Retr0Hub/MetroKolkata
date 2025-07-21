@@ -230,11 +230,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 3, color: buttonTextColor))
+                          child: Image.asset(
+                            'lib/assets/loading.gif',
+                            width: 24,
+                            height: 24,
+                          ))
                       : Text(
                           _isEmail ? 'Log In' : 'Continue',
                           style: GoogleFonts.inter(

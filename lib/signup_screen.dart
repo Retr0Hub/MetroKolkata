@@ -189,11 +189,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 3, color: buttonTextColor))
+                          child: Image.asset(
+                            'lib/assets/loading.gif',
+                            width: 24,
+                            height: 24,
+                          ))
                       : Text(
                           'Sign Up',
                           style: GoogleFonts.inter(
