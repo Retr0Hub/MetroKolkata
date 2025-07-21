@@ -38,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onIdentifierChanged() {
     final text = _identifierController.text.trim();
-    // A simple check to see if the input could be an email.
-    final bool isEmail = text.contains('@');
+    // Check for a more complete email format (contains @ and a dot after @)
+    final bool isEmail = text.contains('@') && text.contains('.') && text.indexOf('@') < text.lastIndexOf('.');
     if (isEmail != _isEmail) {
       setState(() {
         _isEmail = isEmail;
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Please enter a valid 10-digit phone number.')));
+          content: Text('Invalid phone number')));
     }
   }
 
@@ -176,10 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Email or Phone', inputFillColor, labelColor),
                 keyboardType: TextInputType.text,
-                validator: (value) =>
-                    value!.isEmpty
-                        ? 'Please enter your email or phone number'
-                        : null,
+                                  validator: (value) =>
+                      value!.isEmpty
+                          ? 'Email or phone required'
+                          : null,
               ),
               // Conditionally show the password field and forgot password button
               AnimatedSwitcher(
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(color: textColor, fontSize: 18),
                             decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                             validator: (value) => _isEmail && (value == null || value.isEmpty)
-                                ? 'Please enter a password'
+                                ? 'Password required'
                                 : null,
                           ),
                           TextButton(

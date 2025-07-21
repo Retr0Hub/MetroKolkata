@@ -152,8 +152,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _nameController,
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Full Name', inputFillColor, labelColor),
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your name' : null,
+                                  validator: (value) =>
+                      value!.isEmpty ? 'Name required' : null,
               ),
               const SizedBox(height: 16),
                                               TextFormField(
@@ -161,9 +161,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Email', inputFillColor, labelColor),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) => (value == null || !value.contains('@'))
-                    ? 'Please enter a valid email'
-                    : null,
+                                  validator: (value) => (value == null || !value.contains('@'))
+                      ? 'Valid email required'
+                      : null,
               ),
               const SizedBox(height: 16),
                                               TextFormField(
@@ -171,9 +171,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   obscureText: true,
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
-                validator: (value) => (value == null || value.length < 6)
-                    ? 'Password must be at least 6 characters'
-                    : null,
+                                  validator: (value) => (value == null || value.length < 6)
+                      ? 'Password too short (min 6)'
+                      : null,
               ),
               const SizedBox(height: 40),
               SizedBox(
