@@ -485,7 +485,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 );
               },
             ),
-
           if (!_isExiting)
             // Normal layout for initial animation
             Padding(
@@ -716,9 +715,11 @@ class _WelcomeTextWrapper extends StatefulWidget {
 class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
     with TickerProviderStateMixin {
   late AnimationController _headerController;
+  late AnimationController _reverseController;
   late Animation<double> _headerOpacity;
   late Animation<double> _contentOpacity;
   late Animation<Offset> _contentSlide;
+  late Animation<Offset> _reverseTextSlide;
 
   @override
   void initState() {
@@ -726,6 +727,11 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
     
     _headerController = AnimationController(
       duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _reverseController = AnimationController(
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
@@ -753,6 +759,14 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
     ));
 
+    _reverseTextSlide = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, 205), // Move text from 120px back to 325px (difference = 205px)
+    ).animate(CurvedAnimation(
+      parent: _reverseController,
+      curve: Curves.easeInOutCubic,
+    ));
+
     // Start the header animation after the page transition begins
     widget.animation.addListener(_onPageAnimationChange);
   }
@@ -767,6 +781,7 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
   void dispose() {
     widget.animation.removeListener(_onPageAnimationChange);
     _headerController.dispose();
+    _reverseController.dispose();
     super.dispose();
   }
 
@@ -776,9 +791,20 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
     final metroColor = isDarkMode ? Colors.white : Colors.black;
 
     return PopScope(
-      onPopInvoked: (didPop) {
-        if (didPop) {
+      canPop: false, // Prevent default pop behavior
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          // Start reverse animation
+          _reverseController.forward();
+          
+          // Wait for animation to complete
+          await Future.delayed(const Duration(milliseconds: 800));
+          
+          // Then call the back handler and actually pop
           widget.onBack?.call();
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         }
       },
       child: Scaffold(
@@ -801,58 +827,67 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                 },
               ),
             ),
-            // Welcome text overlay - positioned to match exit animation
+                        // Welcome text overlay with reverse animation
             FadeTransition(
               opacity: widget.animation,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(
-                  top: 120, // Moved up from 160px
-                  left: 24, // Align with form content (matches login/signup padding)
-                  right: 24,
-                  bottom: 20,
-                ),
-               child: AnimatedBuilder(
-                 animation: _headerController,
-                 builder: (context, child) {
-                   return FadeTransition(
-                     opacity: _headerOpacity,
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Text(
-                           'Welcome To',
-                           style: TextStyle(
-                             fontFamily: 'Arial',
-                             fontSize: 26,
-                             color: metroColor,
-                             fontWeight: FontWeight.w500,
-
+              child: AnimatedBuilder(
+                animation: _reverseController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _reverseTextSlide.value.dy),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(
+                        top: 120, // Moved up from 160px
+                        left: 24, // Align with form content (matches login/signup padding)
+                        right: 24,
+                        bottom: 20,
+                      ),
+                     child: AnimatedBuilder(
+                       animation: _headerController,
+                       builder: (context, child) {
+                         return FadeTransition(
+                           opacity: _headerOpacity,
+                           child: Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Text(
+                                 'Welcome To',
+                                 style: TextStyle(
+                                   fontFamily: 'Arial',
+                                   fontSize: 26,
+                                   color: metroColor,
+                                   fontWeight: FontWeight.w500,
+       
+                                 ),
+                                 textAlign: TextAlign.left,
+                               ),
+                               FittedBox(
+                                 fit: BoxFit.scaleDown,
+                                 alignment: Alignment.centerLeft,
+                                 child: Text(
+                                   'Kolkata Metro',
+                                   style: TextStyle(
+                                     fontWeight: FontWeight.bold,
+                                     fontSize: 46,
+                                     color: metroColor,
+                                     fontFamily: 'Arial',
+       
+                                   ),
+                                   textAlign: TextAlign.left,
+                                   maxLines: 1,
+                                 ),
+                               ),
+                             ],
                            ),
-                           textAlign: TextAlign.left,
-                         ),
-                         FittedBox(
-                           fit: BoxFit.scaleDown,
-                           alignment: Alignment.centerLeft,
-                           child: Text(
-                             'Kolkata Metro',
-                             style: TextStyle(
-                               fontWeight: FontWeight.bold,
-                               fontSize: 46,
-                               color: metroColor,
-                               fontFamily: 'Arial',
-
-                             ),
-                             textAlign: TextAlign.left,
-                             maxLines: 1,
-                           ),
-                         ),
-                       ],
+                         );
+                       },
                      ),
-                   );
-                 },
-               ),
-             ),
+                   ),
+                  );
+                },
+              ),
+            ),
              ),
            ],
          ),
