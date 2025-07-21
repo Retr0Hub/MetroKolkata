@@ -173,8 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.zero,
             ),
           ),
-          // Main content (no scrolling)
-          Padding(
+          // Main content with keyboard handling
+          SingleChildScrollView(
             padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
             child: Form(
               key: _formKey,
@@ -225,13 +225,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   PageRouteBuilder(
                                     transitionDuration: const Duration(milliseconds: 300),
                                     reverseTransitionDuration: const Duration(milliseconds: 800),
-                                    pageBuilder: (context, animation, secondaryAnimation) {
-                                                                             return WelcomeTextWrapper(
-                                        child: const ForgotPasswordScreen(),
-                                        animation: animation,
-                                        onBack: () {}, // Will handle with PopScope
-                                      );
-                                    },
+                                                                         pageBuilder: (context, animation, secondaryAnimation) {
+                                       return _NoReverseWrapper(
+                                         child: const ForgotPasswordScreen(),
+                                         animation: animation,
+                                       );
+                                     },
                                   ),
                                 );
                               },
@@ -328,6 +327,153 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               )
                 ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoReverseWrapper extends StatefulWidget {
+  final Widget child;
+  final Animation<double> animation;
+
+  const _NoReverseWrapper({
+    required this.child,
+    required this.animation,
+  });
+
+  @override
+  State<_NoReverseWrapper> createState() => _NoReverseWrapperState();
+}
+
+class _NoReverseWrapperState extends State<_NoReverseWrapper>
+    with TickerProviderStateMixin {
+  late AnimationController _headerController;
+  late Animation<double> _headerOpacity;
+  late Animation<double> _contentOpacity;
+  late Animation<Offset> _contentSlide;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _headerController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _headerOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+    ));
+
+    _contentOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+    ));
+
+    _contentSlide = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _headerController,
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+    ));
+
+    // Start the header animation after the page transition begins
+    widget.animation.addListener(_onPageAnimationChange);
+  }
+
+  void _onPageAnimationChange() {
+    if (widget.animation.value > 0.3 && !_headerController.isAnimating && _headerController.value == 0) {
+      _headerController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.animation.removeListener(_onPageAnimationChange);
+    _headerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final metroColor = isDarkMode ? Colors.white : Colors.black;
+
+    return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      body: Stack(
+        children: [
+          // Main content (no reverse animation)
+          FadeTransition(
+            opacity: widget.animation,
+            child: AnimatedBuilder(
+              animation: _headerController,
+              builder: (context, child) {
+                return SlideTransition(
+                  position: _contentSlide,
+                  child: FadeTransition(
+                    opacity: _contentOpacity,
+                    child: widget.child,
+                  ),
+                );
+              },
+            ),
+          ),
+          // Welcome text overlay (no reverse animation)
+          FadeTransition(
+            opacity: widget.animation,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(
+                top: 120,
+                left: 24,
+                right: 24,
+                bottom: 20,
+              ),
+              child: AnimatedBuilder(
+                animation: _headerController,
+                builder: (context, child) {
+                  return FadeTransition(
+                    opacity: _headerOpacity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome To',
+                          style: TextStyle(
+                            fontFamily: 'Arial',
+                            fontSize: 26,
+                            color: metroColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        Text(
+                          'Kolkata Metro',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 46,
+                            color: metroColor,
+                            fontFamily: 'Arial',
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),
