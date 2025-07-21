@@ -362,48 +362,40 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
           // Exit animation layout with fixed positioning to prevent jumping
           if (_isExiting) ...[
-            // Fixed position text that animates upward smoothly
+            // Fixed position text at 160px - no movement, just stays there
             Positioned(
-              top: 325, // Fixed position to prevent jumping
+              top: 160, // Fixed at 160px from top
               left: 48,
               right: 48,
-              child: AnimatedBuilder(
-                animation: _exitController,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, _exitTextSlide.value.dy * 50),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome To',
-                          style: TextStyle(
-                            fontFamily: 'Arial',
-                            fontSize: 26,
-                            color: metroColor,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Kolkata Metro',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 46,
-                              color: metroColor,
-                              fontFamily: 'Arial',
-                            ),
-                            textAlign: TextAlign.left,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome To',
+                    style: TextStyle(
+                      fontFamily: 'Arial',
+                      fontSize: 26,
+                      color: metroColor,
+                      fontWeight: FontWeight.w500,
                     ),
-                  );
-                },
+                    textAlign: TextAlign.left,
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Kolkata Metro',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 46,
+                        color: metroColor,
+                        fontFamily: 'Arial',
+                      ),
+                      textAlign: TextAlign.left,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
               ),
             ),
             // Fixed position other elements that fade out
