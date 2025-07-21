@@ -273,7 +273,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           transitionDuration: const Duration(milliseconds: 300),
           reverseTransitionDuration: const Duration(milliseconds: 800),
           pageBuilder: (context, animation, secondaryAnimation) {
-            return _WelcomeTextWrapper(
+            return WelcomeTextWrapper(
               child: destination,
               animation: animation,
               onBack: _handleBackTransition,
@@ -628,22 +628,22 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 }
 
-class _WelcomeTextWrapper extends StatefulWidget {
+class WelcomeTextWrapper extends StatefulWidget {
   final Widget child;
   final Animation<double> animation;
   final VoidCallback? onBack;
 
-  const _WelcomeTextWrapper({
+  const WelcomeTextWrapper({
     required this.child,
     required this.animation,
     this.onBack,
   });
 
   @override
-  State<_WelcomeTextWrapper> createState() => _WelcomeTextWrapperState();
+  State<WelcomeTextWrapper> createState() => _WelcomeTextWrapperState();
 }
 
-class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
+class _WelcomeTextWrapperState extends State<WelcomeTextWrapper>
     with TickerProviderStateMixin {
   late AnimationController _headerController;
   late AnimationController _reverseController;
