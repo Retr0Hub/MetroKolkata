@@ -38,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onIdentifierChanged() {
     final text = _identifierController.text.trim();
-    // A simple check to see if the input could be an email.
-    final bool isEmail = text.contains('@');
+    // Check if input contains any letter (emails can have letters, phone numbers are only digits)
+    final bool isEmail = text.isNotEmpty && RegExp(r'[a-zA-Z]').hasMatch(text);
     if (isEmail != _isEmail) {
       setState(() {
         _isEmail = isEmail;
@@ -176,10 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: textColor, fontSize: 18),
                   decoration: _uberInputDecoration('Email or Phone', inputFillColor, labelColor),
                 keyboardType: TextInputType.text,
-                validator: (value) =>
-                    value!.isEmpty
-                        ? 'Please enter your email or phone number'
-                        : null,
+                                  validator: (value) =>
+                      value!.isEmpty
+                          ? 'Please enter your email or phone number'
+                          : null,
               ),
               // Conditionally show the password field and forgot password button
               AnimatedSwitcher(
