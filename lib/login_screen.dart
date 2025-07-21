@@ -165,10 +165,10 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                                              Text(
-                  "What's your email or phone number?",
+                Text(
+                  "Enter your registered email or phone number?",
                   style: GoogleFonts.inter(
-                      fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
+                      fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
                 ),
               const SizedBox(height: 32),
                                               TextFormField(

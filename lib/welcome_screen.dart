@@ -405,8 +405,86 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   );
                 },
               ),
-
-
+            ),
+          if (_isExiting)
+            AnimatedBuilder(
+              animation: _exitController,
+              builder: (context, child) {
+                // Keep buttons visible during transition - no fade out
+                return Opacity(
+                  opacity: 1.0, // Keep buttons fully visible
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 225.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 100),
+                        // Empty space for text
+                        const SizedBox(height: 102), // Height of text area
+                        const SizedBox(height: 30),
+                        // Logo
+                        SvgPicture.asset(
+                          logo1,
+                          width: 40,
+                          height: 40,
+                          color: textColor,
+                        ),
+                        const SizedBox(height: 15),
+                        const Spacer(),
+                        // Buttons and credit
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Column(
+                            children: [
+                              _buildButton(
+                                context,
+                                'Login',
+                                Colors.white,
+                                Colors.black,
+                                () {},
+                                borderColor: Colors.black,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildButton(
+                                context,
+                                'Create an account',
+                                Colors.black,
+                                Colors.white,
+                                () {},
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 20),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    fontSize: 14,
+                                    color: textColor.withOpacity(0.7),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Made with '),
+                                    TextSpan(
+                                      text: '❤️',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' by Ayush'),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
           if (!_isExiting)
             // Normal layout for initial animation
             Padding(
