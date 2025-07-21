@@ -219,7 +219,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     // Exit animations - Smooth position transition
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -165), // Move from 325px to 160px (difference = 165px)
+      end: const Offset(0, -205), // Move from 325px to 120px (difference = 205px)
     ).animate(CurvedAnimation(
       parent: _exitController,
       curve: Curves.easeInOutCubic,
@@ -364,8 +364,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           if (_isExiting)
             Positioned(
               top: 325, // Start from original position
-              left: 48,
-              right: 48,
+              left: 24, // Align with form content
+              right: 24,
               child: AnimatedBuilder(
                 animation: _exitController,
                 builder: (context, child) {
@@ -405,13 +405,22 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 },
               ),
             
-          // Other elements fade out during exit  
+          // Other elements fade out during exit (but keep buttons visible longer)
           if (_isExiting)
             AnimatedBuilder(
               animation: _exitController,
               builder: (context, child) {
+                // Delay the fade out so buttons stay visible during text transition
+                final delayedFade = Tween<double>(
+                  begin: 1.0,
+                  end: 0.0,
+                ).animate(CurvedAnimation(
+                  parent: _exitController,
+                  curve: const Interval(0.7, 1.0, curve: Curves.easeOut), // Start fading at 70% through animation
+                ));
+                
                 return FadeTransition(
-                  opacity: _exitElementsOpacity,
+                  opacity: delayedFade,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 225.0),
                     child: Column(
@@ -431,7 +440,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         const Spacer(),
                         // Buttons and credit
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Column(
                             children: [
                               _buildButton(
@@ -495,7 +504,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   // Animated welcome text (normal state only)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: AnimatedBuilder(
                       animation: _textController,
                       builder: (context, child) {
@@ -629,7 +638,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         child: FadeTransition(
                           opacity: _creditOpacity,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 48),
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -676,7 +685,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     Color? borderColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 48),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -806,9 +815,9 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(
-                  top: 160, // Match the exit animation final position
-                  left: 48,
-                  right: 48,
+                  top: 120, // Moved up from 160px
+                  left: 24, // Align with form content (matches login/signup padding)
+                  right: 24,
                   bottom: 20,
                 ),
                child: AnimatedBuilder(
