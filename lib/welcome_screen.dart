@@ -404,6 +404,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   );
                 },
               ),
+            ),
           if (_isExiting)
             AnimatedBuilder(
               animation: _exitController,
