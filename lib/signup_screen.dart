@@ -110,24 +110,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 160.0, left: 24.0, right: 24.0, bottom: 24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Back button
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  onPressed: () => _navigateBackWithTransition(),
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  padding: EdgeInsets.zero,
-                  alignment: Alignment.centerLeft,
-                ),
-              ),
-              const SizedBox(height: 16),
+      body: Stack(
+        children: [
+          // Fixed back button at top
+          Positioned(
+            top: 60,
+            left: 24,
+            child: IconButton(
+              onPressed: () => _navigateBackWithTransition(),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          // Scrollable content
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               Text(
                 "Create your account",
                 style: GoogleFonts.inter(
@@ -215,9 +217,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
               ),
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
