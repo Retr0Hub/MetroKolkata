@@ -216,10 +216,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    // Exit animations - Fixed positioning to prevent jumping
+    // Exit animations - Smooth position transition
     _exitTextSlide = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0, -0.3), // Reduced offset to prevent jumping
+      end: const Offset(0, -165), // Move from 325px to 160px (difference = 165px)
     ).animate(CurvedAnimation(
       parent: _exitController,
       curve: Curves.easeInOutCubic,
@@ -360,103 +360,43 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               },
             ),
 
-          // Exit animation layout with fixed positioning to prevent jumping
-          if (_isExiting) ...[
-            // Fixed position text at 160px - no movement, just stays there
+          // Exit animation layout - text smoothly moves to final position
+          if (_isExiting)
             Positioned(
-              top: 160, // Fixed at 160px from top
-              left: 48,
-              right: 48,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome To',
-                    style: TextStyle(
-                      fontFamily: 'Arial',
-                      fontSize: 26,
-                      color: metroColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Kolkata Metro',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 46,
-                        color: metroColor,
-                        fontFamily: 'Arial',
-                      ),
-                      textAlign: TextAlign.left,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Fixed position other elements that fade out
-            Positioned(
-              top: 447, // Position for logo
+              top: 325, // Start from original position
               left: 48,
               right: 48,
               child: AnimatedBuilder(
                 animation: _exitController,
                 builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _exitElementsOpacity,
+                  return Transform.translate(
+                    offset: Offset(0, _exitTextSlide.value.dy),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset(
-                          logo1,
-                          width: 40,
-                          height: 40,
-                          color: textColor,
+                        Text(
+                          'Welcome To',
+                          style: TextStyle(
+                            fontFamily: 'Arial',
+                            fontSize: 26,
+                            color: metroColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.left,
                         ),
-                        const SizedBox(height: 180), // Space for buttons
-                        // Exit state buttons
-                        _buildButton(
-                          context,
-                          'Login',
-                          Colors.white,
-                          Colors.black,
-                          () {},
-                          borderColor: Colors.black,
-                        ),
-                        const SizedBox(height: 10),
-                        _buildButton(
-                          context,
-                          'Create an account',
-                          Colors.black,
-                          Colors.white,
-                          () {},
-                          borderColor: borderColor,
-                        ),
-                        const SizedBox(height: 20),
-                        // Credit text
-                        RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Kolkata Metro',
                             style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 46,
+                              color: metroColor,
                               fontFamily: 'Arial',
-                              fontSize: 14,
-                              color: textColor.withOpacity(0.7),
-                              fontWeight: FontWeight.w400,
                             ),
-                            children: [
-                              const TextSpan(text: 'Made with '),
-                              TextSpan(
-                                text: '❤️',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.red,
-                                ),
-                              ),
-                              const TextSpan(text: ' by Ayush'),
-                            ],
+                            textAlign: TextAlign.left,
+                            maxLines: 1,
                           ),
                         ),
                       ],
@@ -464,8 +404,88 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   );
                 },
               ),
+            
+          // Other elements fade out during exit  
+          if (_isExiting)
+            AnimatedBuilder(
+              animation: _exitController,
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _exitElementsOpacity,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 225.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 100),
+                        // Empty space for text
+                        const SizedBox(height: 102), // Height of text area
+                        const SizedBox(height: 30),
+                        // Logo
+                        SvgPicture.asset(
+                          logo1,
+                          width: 40,
+                          height: 40,
+                          color: textColor,
+                        ),
+                        const SizedBox(height: 15),
+                        const Spacer(),
+                        // Buttons and credit
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Column(
+                            children: [
+                              _buildButton(
+                                context,
+                                'Login',
+                                Colors.white,
+                                Colors.black,
+                                () {},
+                                borderColor: Colors.black,
+                              ),
+                              const SizedBox(height: 10),
+                              _buildButton(
+                                context,
+                                'Create an account',
+                                Colors.black,
+                                Colors.white,
+                                () {},
+                                borderColor: borderColor,
+                              ),
+                              const SizedBox(height: 20),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    fontSize: 14,
+                                    color: textColor.withOpacity(0.7),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Made with '),
+                                    TextSpan(
+                                      text: '❤️',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' by Ayush'),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          ] else
+
+          if (!_isExiting)
             // Normal layout for initial animation
             Padding(
               padding: const EdgeInsets.only(top: 225.0),
