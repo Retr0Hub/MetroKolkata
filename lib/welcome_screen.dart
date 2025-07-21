@@ -574,48 +574,26 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   const SizedBox(height: 15),
                   const Spacer(),
                   
-                  // Animated login button (normal state only)
-                  AnimatedBuilder(
-                    animation: _buttonController,
-                    builder: (context, child) {
-                      return SlideTransition(
-                        position: _loginButtonSlide,
-                        child: FadeTransition(
-                          opacity: _loginButtonOpacity,
-                          child: _buildButton(
-                            context,
-                            'Login',
-                            Colors.white,
-                            Colors.black,
-                            () => _navigateWithTransition(const LoginScreen()),
-                            borderColor: Colors.black,
-                          ),
-                        ),
-                      );
-                    },
+                  // Static login button (no animation to prevent shrinking)
+                  _buildButton(
+                    context,
+                    'Login',
+                    Colors.white,
+                    Colors.black,
+                    () => _navigateWithTransition(const LoginScreen()),
+                    borderColor: Colors.black,
                   ),
                   
                   const SizedBox(height: 10),
                   
-                  // Animated signup button (normal state only)
-                  AnimatedBuilder(
-                    animation: _buttonController,
-                    builder: (context, child) {
-                      return SlideTransition(
-                        position: _signupButtonSlide,
-                        child: FadeTransition(
-                          opacity: _signupButtonOpacity,
-                          child: _buildButton(
-                            context,
-                            'Create an account',
-                            Colors.black,
-                            Colors.white,
-                            () => _navigateWithTransition(const SignUpScreen()),
-                            borderColor: borderColor,
-                          ),
-                        ),
-                      );
-                    },
+                  // Static signup button (no animation to prevent shrinking)
+                  _buildButton(
+                    context,
+                    'Create an account',
+                    Colors.black,
+                    Colors.white,
+                    () => _navigateWithTransition(const SignUpScreen()),
+                    borderColor: borderColor,
                   ),
                   
                   const SizedBox(height: 20),
@@ -720,6 +698,7 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
   late Animation<double> _contentOpacity;
   late Animation<Offset> _contentSlide;
   late Animation<Offset> _reverseTextSlide;
+  late Animation<double> _reverseUIOpacity;
 
   @override
   void initState() {
@@ -767,6 +746,14 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       curve: Curves.easeInOutCubic,
     ));
 
+    _reverseUIOpacity = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _reverseController,
+      curve: Curves.easeOut,
+    ));
+
     // Start the header animation after the page transition begins
     widget.animation.addListener(_onPageAnimationChange);
   }
@@ -807,87 +794,95 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
           }
         }
       },
-      child: Scaffold(
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        body: Stack(
-          children: [
-            // Main content with login/signup form
-            FadeTransition(
-              opacity: widget.animation,
-              child: AnimatedBuilder(
-                animation: _headerController,
+              child: Scaffold(
+          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          body: Stack(
+            children: [
+              // Main content with login/signup form (fades during reverse)
+              AnimatedBuilder(
+                animation: _reverseController,
                 builder: (context, child) {
-                  return SlideTransition(
-                    position: _contentSlide,
+                  return FadeTransition(
+                    opacity: _reverseUIOpacity,
                     child: FadeTransition(
-                      opacity: _contentOpacity,
-                      child: widget.child,
+                      opacity: widget.animation,
+                      child: AnimatedBuilder(
+                        animation: _headerController,
+                        builder: (context, child) {
+                          return SlideTransition(
+                            position: _contentSlide,
+                            child: FadeTransition(
+                              opacity: _contentOpacity,
+                              child: widget.child,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 },
               ),
-            ),
-                        // Welcome text overlay with reverse animation
-            FadeTransition(
-              opacity: widget.animation,
-              child: AnimatedBuilder(
-                animation: _reverseController,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, _reverseTextSlide.value.dy),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(
-                        top: 120, // Moved up from 160px
-                        left: 24, // Align with form content (matches login/signup padding)
-                        right: 24,
-                        bottom: 20,
+                                       // Welcome text overlay with reverse animation (NO fade during reverse)
+               AnimatedBuilder(
+                 animation: _reverseController,
+                 builder: (context, child) {
+                   return Transform.translate(
+                     offset: Offset(0, _reverseTextSlide.value.dy),
+                     child: FadeTransition(
+                       opacity: widget.animation, // Only fade with normal animation, not reverse
+                       child: Container(
+                         width: double.infinity,
+                         padding: const EdgeInsets.only(
+                           top: 120, // Moved up from 160px
+                           left: 24, // Align with form content (matches login/signup padding)
+                           right: 24,
+                           bottom: 20,
+                         ),
+                        child: AnimatedBuilder(
+                          animation: _headerController,
+                          builder: (context, child) {
+                            return FadeTransition(
+                              opacity: _headerOpacity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Welcome To',
+                                    style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      fontSize: 26,
+                                      color: metroColor,
+                                      fontWeight: FontWeight.w500,
+          
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Kolkata Metro',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 46,
+                                        color: metroColor,
+                                        fontFamily: 'Arial',
+          
+                                      ),
+                                      textAlign: TextAlign.left,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                     child: AnimatedBuilder(
-                       animation: _headerController,
-                       builder: (context, child) {
-                         return FadeTransition(
-                           opacity: _headerOpacity,
-                           child: Column(
-                             crossAxisAlignment: CrossAxisAlignment.start,
-                             children: [
-                               Text(
-                                 'Welcome To',
-                                 style: TextStyle(
-                                   fontFamily: 'Arial',
-                                   fontSize: 26,
-                                   color: metroColor,
-                                   fontWeight: FontWeight.w500,
-       
-                                 ),
-                                 textAlign: TextAlign.left,
-                               ),
-                               FittedBox(
-                                 fit: BoxFit.scaleDown,
-                                 alignment: Alignment.centerLeft,
-                                 child: Text(
-                                   'Kolkata Metro',
-                                   style: TextStyle(
-                                     fontWeight: FontWeight.bold,
-                                     fontSize: 46,
-                                     color: metroColor,
-                                     fontFamily: 'Arial',
-       
-                                   ),
-                                   textAlign: TextAlign.left,
-                                   maxLines: 1,
-                                 ),
-                               ),
-                             ],
-                           ),
-                         );
-                       },
                      ),
-                   ),
-                  );
-                },
-              ),
-            ),
+                   );
+                 },
+               ),
              ),
            ],
          ),
