@@ -621,6 +621,7 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
   late Animation<Offset> _contentSlide;
   late Animation<Offset> _reverseTextSlide;
   late Animation<double> _reverseUIOpacity;
+  late Animation<Offset> _reverseUISlide;
 
   @override
   void initState() {
@@ -676,6 +677,14 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
       curve: Curves.easeOut,
     ));
 
+    _reverseUISlide = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, 0.5), // Slide down like original entry animation
+    ).animate(CurvedAnimation(
+      parent: _reverseController,
+      curve: Curves.easeInOutCubic,
+    ));
+
     // Start the header animation after the page transition begins
     widget.animation.addListener(_onPageAnimationChange);
   }
@@ -720,30 +729,33 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
           backgroundColor: isDarkMode ? Colors.black : Colors.white,
           body: Stack(
             children: [
-              // Main content with login/signup form (fades during reverse)
-              AnimatedBuilder(
-                animation: _reverseController,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _reverseUIOpacity,
-                    child: FadeTransition(
-                      opacity: widget.animation,
-                      child: AnimatedBuilder(
-                        animation: _headerController,
-                        builder: (context, child) {
-                          return SlideTransition(
-                            position: _contentSlide,
-                            child: FadeTransition(
-                              opacity: _contentOpacity,
-                              child: widget.child,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
+                             // Main content with login/signup form (slides and fades during reverse)
+               AnimatedBuilder(
+                 animation: _reverseController,
+                 builder: (context, child) {
+                   return SlideTransition(
+                     position: _reverseUISlide,
+                     child: FadeTransition(
+                       opacity: _reverseUIOpacity,
+                       child: FadeTransition(
+                         opacity: widget.animation,
+                         child: AnimatedBuilder(
+                           animation: _headerController,
+                           builder: (context, child) {
+                             return SlideTransition(
+                               position: _contentSlide,
+                               child: FadeTransition(
+                                 opacity: _contentOpacity,
+                                 child: widget.child,
+                               ),
+                             );
+                           },
+                         ),
+                       ),
+                     ),
+                   );
+                 },
+               ),
                                        // Welcome text overlay with reverse animation (NO fade at all)
                AnimatedBuilder(
                  animation: _reverseController,
