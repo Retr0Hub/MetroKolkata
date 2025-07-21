@@ -53,24 +53,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: backgroundColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: textColor),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      body: Stack(
+        children: [
+          // Fixed back button at top
+          Positioned(
+            top: 60,
+            left: 12,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back, color: textColor),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          // Main content (no scrolling)
+          Padding(
+            padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Enter your email to reset your password',
-                style: GoogleFonts.inter(
-                    fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
-              ),
-              const SizedBox(height: 32),
+                      child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Reset your password",
+                  style: GoogleFonts.inter(
+                      fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Enter your email address and we'll send you a link to reset your password",
+                  style: GoogleFonts.inter(
+                      fontSize: 16, color: textColor.withOpacity(0.7)),
+                ),
+                const SizedBox(height: 40),
               TextFormField(
                 controller: _emailController,
                 style: TextStyle(color: textColor, fontSize: 18),
@@ -110,6 +124,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ],
           ),
         ),
+      ),
+        ],
       ),
     );
   }

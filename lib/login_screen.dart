@@ -173,8 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.zero,
             ),
           ),
-          // Scrollable content
-          SingleChildScrollView(
+          // Main content (no scrolling)
+          Padding(
             padding: const EdgeInsets.only(top: 250.0, left: 24.0, right: 24.0, bottom: 24.0),
             child: Form(
               key: _formKey,
@@ -182,11 +182,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                 Text(
-                  "Enter your registered email or phone number?",
+                  "What's your email or phone number?",
                   style: GoogleFonts.inter(
-                      fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
-                ),
-              const SizedBox(height: 32),
+                      fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
+                                ),
+                const SizedBox(height: 24),
                                               TextFormField(
                   controller: _identifierController,
                   style: TextStyle(color: textColor, fontSize: 18),
