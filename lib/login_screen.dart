@@ -8,6 +8,7 @@ import 'phone_auth_screen.dart';
 import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
+import 'welcome_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -217,11 +218,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? 'Please enter a password'
                                 : null,
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => const ForgotPasswordScreen()));
-                            },
+                                                      TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration: const Duration(milliseconds: 300),
+                                    reverseTransitionDuration: const Duration(milliseconds: 800),
+                                    pageBuilder: (context, animation, secondaryAnimation) {
+                                                                             return WelcomeTextWrapper(
+                                        child: const ForgotPasswordScreen(),
+                                        animation: animation,
+                                        onBack: () {}, // Will handle with PopScope
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
                             child: const Text('Forgot Password?'),
                             style: TextButton.styleFrom(foregroundColor: forgotPasswordColor),
                           ),
@@ -294,8 +307,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(color: Colors.grey)),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => const SignUpScreen()));
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 300),
+                          reverseTransitionDuration: const Duration(milliseconds: 800),
+                          pageBuilder: (context, animation, secondaryAnimation) {
+                            return WelcomeTextWrapper(
+                              child: const SignUpScreen(),
+                              animation: animation,
+                              onBack: () {}, // Will handle with PopScope
+                            );
+                          },
+                        ),
+                      );
                     },
                     child: const Text('Sign up'),
                     style: TextButton.styleFrom(foregroundColor: linkColor),

@@ -43,12 +43,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonBgColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonTextColor = isDarkMode ? Colors.black : Colors.white;
+    final inputFillColor = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey.shade50;
+    final labelColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: backgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: textColor),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -60,13 +68,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text(
                 'Enter your email to reset your password',
                 style: GoogleFonts.inter(
-                    fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+                    fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 32),
               TextFormField(
                 controller: _emailController,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-                decoration: _uberInputDecoration('Email'),
+                style: TextStyle(color: textColor, fontSize: 18),
+                decoration: _uberInputDecoration('Email', inputFillColor, labelColor),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty || !value.contains('@')) {
@@ -79,19 +87,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _sendPasswordResetEmail,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  backgroundColor: buttonBgColor,
+                  foregroundColor: buttonTextColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
+                                    child: _isLoading
+                        ? SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 3, color: Colors.black))
+                        child: Image.asset(
+                          'lib/assets/loading.gif',
+                          width: 24,
+                          height: 24,
+                        ))
                     : Text('Send Reset Link',
                         style: GoogleFonts.inter(
                             fontSize: 18, fontWeight: FontWeight.bold),),
@@ -104,12 +115,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 }
 
-InputDecoration _uberInputDecoration(String labelText) {
+InputDecoration _uberInputDecoration(String labelText, Color fillColor, Color labelColor) {
   return InputDecoration(
     labelText: labelText,
-    labelStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+    labelStyle: GoogleFonts.inter(color: labelColor),
     filled: true,
-    fillColor: const Color(0xFF2C2C2E),
+    fillColor: fillColor,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide.none,
