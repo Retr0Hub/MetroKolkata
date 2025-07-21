@@ -233,9 +233,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 3, 
-                              valueColor: AlwaysStoppedAnimation<Color>(buttonTextColor)))
+                          child: Image.asset(
+                            'lib/assets/loading.png',
+                            width: 24,
+                            height: 24,
+                          ))
                       : Text(
                           _isEmail ? 'Log In' : 'Continue',
                           style: GoogleFonts.inter(
