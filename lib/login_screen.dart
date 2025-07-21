@@ -131,17 +131,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonBgColor = isDarkMode ? Colors.white : Colors.black;
+    final buttonTextColor = isDarkMode ? Colors.black : Colors.white;
+    final inputFillColor = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey.shade50;
+    final labelColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+    final googleButtonBg = isDarkMode ? const Color(0xFF2C2C2E) : Colors.grey.shade100;
+    final googleButtonText = isDarkMode ? Colors.white : Colors.black;
+    final linkColor = isDarkMode ? Colors.white : Colors.black;
+    final forgotPasswordColor = isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600;
+    
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // Fixed back button at top - aligned with content
           Positioned(
             top: 60,
             left: 12, // More left to align with text content
-                          child: IconButton(
-                onPressed: () => _navigateBackWithTransition(),
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                                      child: IconButton(
+              onPressed: () => _navigateBackWithTransition(),
+              icon: Icon(Icons.arrow_back, color: textColor),
               padding: EdgeInsets.zero,
             ),
           ),
@@ -153,16 +165,16 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                              Text(
+                                              Text(
                   "What's your email or phone number?",
                   style: GoogleFonts.inter(
-                      fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
+                      fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
                 ),
               const SizedBox(height: 32),
-                              TextFormField(
+                                              TextFormField(
                   controller: _identifierController,
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
-                decoration: _uberInputDecoration('Email or Phone'),
+                  style: TextStyle(color: textColor, fontSize: 18),
+                  decoration: _uberInputDecoration('Email or Phone', inputFillColor, labelColor),
                 keyboardType: TextInputType.text,
                 validator: (value) =>
                     value!.isEmpty
@@ -184,8 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            style: const TextStyle(color: Colors.black, fontSize: 18),
-                            decoration: _uberInputDecoration('Password'),
+                            style: TextStyle(color: textColor, fontSize: 18),
+                            decoration: _uberInputDecoration('Password', inputFillColor, labelColor),
                             validator: (value) => _isEmail && (value == null || value.isEmpty)
                                 ? 'Please enter a password'
                                 : null,
@@ -196,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   builder: (_) => const ForgotPasswordScreen()));
                             },
                             child: const Text('Forgot Password?'),
-                            style: TextButton.styleFrom(foregroundColor: Colors.grey.shade600),
+                            style: TextButton.styleFrom(foregroundColor: forgotPasswordColor),
                           ),
                         ],
                       )
@@ -209,9 +221,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _isLoading
                       ? null
                       : (_isEmail ? _loginWithEmail : _navigateToPhoneAuth),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                                      style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonBgColor,
+                      foregroundColor: buttonTextColor,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -222,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
-                              strokeWidth: 3, color: Colors.white))
+                              strokeWidth: 3, color: buttonTextColor))
                       : Text(
                           _isEmail ? 'Log In' : 'Continue',
                           style: GoogleFonts.inter(
@@ -249,8 +261,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: SvgPicture.asset('lib/assets/google_logo.svg', height: 22),
                   label: const Text('Sign in with Google'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade100,
-                    foregroundColor: Colors.black,
+                    backgroundColor: googleButtonBg,
+                    foregroundColor: googleButtonText,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
@@ -268,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (_) => const SignUpScreen()));
                     },
                     child: const Text('Sign up'),
-                    style: TextButton.styleFrom(foregroundColor: Colors.black),
+                    style: TextButton.styleFrom(foregroundColor: linkColor),
                   )
                 ],
               )
@@ -282,12 +294,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-InputDecoration _uberInputDecoration(String labelText) {
+InputDecoration _uberInputDecoration(String labelText, Color fillColor, Color labelColor) {
   return InputDecoration(
     labelText: labelText,
-    labelStyle: GoogleFonts.inter(color: Colors.grey.shade600),
+    labelStyle: GoogleFonts.inter(color: labelColor),
     filled: true,
-    fillColor: Colors.grey.shade50,
+    fillColor: fillColor,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
       borderSide: BorderSide.none,

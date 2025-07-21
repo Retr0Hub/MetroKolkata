@@ -381,6 +381,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             fontSize: 26,
                             color: metroColor,
                             fontWeight: FontWeight.w500,
+                            shadows: !isDarkMode ? [
+                              Shadow(
+                                offset: Offset(-2, -2),
+                                color: Colors.white,
+                              ),
+                              Shadow(
+                                offset: Offset(2, -2),
+                                color: Colors.white,
+                              ),
+                              Shadow(
+                                offset: Offset(2, 2),
+                                color: Colors.white,
+                              ),
+                              Shadow(
+                                offset: Offset(-2, 2),
+                                color: Colors.white,
+                              ),
+                            ] : null,
                           ),
                           textAlign: TextAlign.left,
                         ),
@@ -394,6 +412,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               fontSize: 46,
                               color: metroColor,
                               fontFamily: 'Arial',
+                              shadows: !isDarkMode ? [
+                                Shadow(
+                                  offset: Offset(-2, -2),
+                                  color: Colors.white,
+                                ),
+                                Shadow(
+                                  offset: Offset(2, -2),
+                                  color: Colors.white,
+                                ),
+                                Shadow(
+                                  offset: Offset(2, 2),
+                                  color: Colors.white,
+                                ),
+                                Shadow(
+                                  offset: Offset(-2, 2),
+                                  color: Colors.white,
+                                ),
+                              ] : null,
                             ),
                             textAlign: TextAlign.left,
                             maxLines: 1,
@@ -513,16 +549,34 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               position: _titleSlide,
                               child: FadeTransition(
                                 opacity: _titleOpacity,
-                                child: Text(
-                                  'Welcome To',
-                                  style: TextStyle(
-                                    fontFamily: 'Arial',
-                                    fontSize: 26,
-                                    color: metroColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.left,
+                                                              child: Text(
+                                'Welcome To',
+                                style: TextStyle(
+                                  fontFamily: 'Arial',
+                                  fontSize: 26,
+                                  color: metroColor,
+                                  fontWeight: FontWeight.w500,
+                                  shadows: !isDarkMode ? [
+                                    Shadow(
+                                      offset: Offset(-2, -2),
+                                      color: Colors.white,
+                                    ),
+                                    Shadow(
+                                      offset: Offset(2, -2),
+                                      color: Colors.white,
+                                    ),
+                                    Shadow(
+                                      offset: Offset(2, 2),
+                                      color: Colors.white,
+                                    ),
+                                    Shadow(
+                                      offset: Offset(-2, 2),
+                                      color: Colors.white,
+                                    ),
+                                  ] : null,
                                 ),
+                                textAlign: TextAlign.left,
+                              ),
                               ),
                             ),
                             SlideTransition(
@@ -539,6 +593,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                       fontSize: 46,
                                       color: metroColor,
                                       fontFamily: 'Arial',
+                                      shadows: !isDarkMode ? [
+                                        Shadow(
+                                          offset: Offset(-2, -2),
+                                          color: Colors.white,
+                                        ),
+                                        Shadow(
+                                          offset: Offset(2, -2),
+                                          color: Colors.white,
+                                        ),
+                                        Shadow(
+                                          offset: Offset(2, 2),
+                                          color: Colors.white,
+                                        ),
+                                        Shadow(
+                                          offset: Offset(-2, 2),
+                                          color: Colors.white,
+                                        ),
+                                      ] : null,
                                     ),
                                     textAlign: TextAlign.left,
                                     maxLines: 1,
@@ -833,6 +905,24 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                              fontSize: 26,
                              color: metroColor,
                              fontWeight: FontWeight.w500,
+                             shadows: !isDarkMode ? [
+                               Shadow(
+                                 offset: Offset(-2, -2),
+                                 color: Colors.white,
+                               ),
+                               Shadow(
+                                 offset: Offset(2, -2),
+                                 color: Colors.white,
+                               ),
+                               Shadow(
+                                 offset: Offset(2, 2),
+                                 color: Colors.white,
+                               ),
+                               Shadow(
+                                 offset: Offset(-2, 2),
+                                 color: Colors.white,
+                               ),
+                             ] : null,
                            ),
                            textAlign: TextAlign.left,
                          ),
@@ -846,6 +936,24 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                                fontSize: 46,
                                color: metroColor,
                                fontFamily: 'Arial',
+                               shadows: !isDarkMode ? [
+                                 Shadow(
+                                   offset: Offset(-2, -2),
+                                   color: Colors.white,
+                                 ),
+                                 Shadow(
+                                   offset: Offset(2, -2),
+                                   color: Colors.white,
+                                 ),
+                                 Shadow(
+                                   offset: Offset(2, 2),
+                                   color: Colors.white,
+                                 ),
+                                 Shadow(
+                                   offset: Offset(-2, 2),
+                                   color: Colors.white,
+                                 ),
+                               ] : null,
                              ),
                              textAlign: TextAlign.left,
                              maxLines: 1,
