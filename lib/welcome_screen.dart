@@ -404,8 +404,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   );
                 },
               ),
-            
-          // Other elements fade out during exit (but keep buttons visible longer)
           if (_isExiting)
             AnimatedBuilder(
               animation: _exitController,
@@ -859,10 +857,10 @@ class _WelcomeTextWrapperState extends State<_WelcomeTextWrapper>
                  },
                ),
              ),
+             ),
            ],
          ),
       ),
-    )
     );
   }
 }
