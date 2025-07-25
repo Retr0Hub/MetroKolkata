@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   "What's your email or phone number?",
                   style: GoogleFonts.inter(
-                      fontSize: 26, fontWeight: FontWeight.bold, color: textColor),
+                      fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
                                 ),
                 const SizedBox(height: 24),
                                               TextFormField(
