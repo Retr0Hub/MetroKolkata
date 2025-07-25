@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'security_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -192,6 +193,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.email_outlined,
                       title: 'Email',
                       subtitle: email,
+                    ),
+                    const Divider(height: 1),
+                    _buildSettingsTile(
+                      icon: Icons.security,
+                      title: 'Security Settings',
+                      subtitle: 'Manage 2FA and biometric authentication',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SecuritySettingsScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
