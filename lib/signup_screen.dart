@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
+import 'enhanced_otp_verification_screen.dart';
+import 'services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,7 +20,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _authService = AuthService();
   bool _isLoading = false;
+  bool _otpSent = false;
 
   @override
   void dispose() {
@@ -26,6 +30,68 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _sendOTPAndNavigate() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final success = await _authService.sendSignupOTP(
+        _emailController.text.trim(),
+        _nameController.text.trim(),
+      );
+
+      if (success) {
+        setState(() => _otpSent = true);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => EnhancedOtpVerificationScreen(
+              email: _emailController.text.trim(),
+              userName: _nameController.text.trim(),
+              isSignup: true,
+              onVerificationSuccess: _completeSignup,
+              onResendOTP: () {
+                _authService.sendSignupOTP(
+                  _emailController.text.trim(),
+                  _nameController.text.trim(),
+                );
+              },
+            ),
+          ),
+        );
+      } else {
+        _showErrorSnackBar('Failed to send verification email. Please try again.');
+      }
+    } catch (e) {
+      _showErrorSnackBar('An error occurred. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _completeSignup() async {
+    try {
+      final userCredential = await _authService.signUpWithEmailPassword(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _nameController.text.trim(),
+      );
+
+      if (userCredential != null) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      } else {
+        _showErrorSnackBar('Failed to create account. Please try again.');
+      }
+    } catch (e) {
+      _showErrorSnackBar('An error occurred during signup.');
+    }
   }
 
   Future<void> _signUpWithEmail() async {
@@ -48,6 +114,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'name': _nameController.text.trim(),
           'email': user.email,
           'photoURL': user.photoURL,
+          'twoFactorEnabled': false,
+          'biometricEnabled': false,
           'createdAt': FieldValue.serverTimestamp(),
           'metroCardBalance': 0,
         });
@@ -68,12 +136,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Sign up failed.')),
-      );
+      _showErrorSnackBar(e.message ?? 'Sign up failed.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Future<void> _signUpWithGoogle() async {
@@ -195,7 +271,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _signUpWithEmail,
+                                      onPressed: _isLoading ? null : _sendOTPAndNavigate,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonBgColor,
                     foregroundColor: buttonTextColor,

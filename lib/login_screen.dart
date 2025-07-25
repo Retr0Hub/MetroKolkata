@@ -9,6 +9,9 @@ import 'forgot_password_screen.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
 import 'welcome_screen.dart';
+import 'enhanced_otp_verification_screen.dart';
+import 'biometric_auth_screen.dart';
+import 'services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _identifierController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _authService = AuthService();
   bool _isLoading = false;
   bool _isEmail = false;
 
@@ -54,20 +58,118 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     setState(() => _isLoading = true);
+    
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _identifierController.text.trim(),
-        password: _passwordController.text.trim(),
+      // First, attempt to sign in with email and password
+      final userCredential = await _authService.signInWithEmailPassword(
+        _identifierController.text.trim(),
+        _passwordController.text.trim(),
       );
-      // The AuthWrapper will handle navigation, so we just pop this screen.
-      if (mounted) Navigator.of(context).pop();
+
+      if (userCredential != null) {
+        final user = userCredential.user!;
+        
+        // Check if user has 2FA enabled
+        final has2FA = await _authService.is2FAEnabledForUser(user.uid);
+        final hasBiometric = await _authService.isBiometricEnabledForUser(user.uid);
+        
+        if (has2FA) {
+          // Send 2FA OTP
+          final otpSent = await _authService.send2FAOTP(user.email!);
+          if (otpSent) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => EnhancedOtpVerificationScreen(
+                  email: user.email!,
+                  isSignup: false,
+                  onVerificationSuccess: () {
+                    _checkForBiometric(user.uid, user.email!);
+                  },
+                  onResendOTP: () {
+                    _authService.send2FAOTP(user.email!);
+                  },
+                ),
+              ),
+            );
+          } else {
+            _showErrorSnackBar('Failed to send 2FA code. Please try again.');
+          }
+        } else if (hasBiometric) {
+          // Show biometric authentication option
+          _showBiometricAuthOption(user.uid, user.email!);
+        } else {
+          // Navigate directly to home
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        _showErrorSnackBar('Login failed. Please check your credentials.');
+      }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Login failed')),
-      );
+      _showErrorSnackBar(e.message ?? 'Login failed');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _checkForBiometric(String userId, String email) async {
+    final hasBiometric = await _authService.isBiometricEnabledForUser(userId);
+    if (hasBiometric) {
+      _showBiometricAuthOption(userId, email);
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    }
+  }
+
+  void _showBiometricAuthOption(String userId, String email) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Biometric Authentication'),
+        content: const Text('Use biometric authentication for faster login?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text('Skip'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BiometricAuthScreen(
+                    userId: userId,
+                    email: email,
+                  ),
+                ),
+              );
+            },
+            child: const Text('Use Biometric'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Future<void> _signInWithGoogle() async {
