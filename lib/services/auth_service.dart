@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -17,8 +16,7 @@ class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   
   // Email configuration - In production, use environment variables
-  static const String _emailHost = 'smtp.gmail.com';
-  static const String _emailPort = '587';
+
   static const String _senderEmail = 'your-app-email@gmail.com'; // Replace with your app email
   static const String _senderPassword = 'your-app-password'; // Replace with your app password
 
