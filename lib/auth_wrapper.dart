@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'welcome_screen.dart';
+import 'auth_decision_screen.dart';
 import 'verify_email_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -35,8 +35,8 @@ class AuthWrapper extends StatelessWidget {
             return const HomeScreen();
           }
         } else {
-          // User is not logged in
-          return const WelcomeScreen();
+          // User is not logged in, use our new auth decision screen
+          return const AuthDecisionScreen();
         }
       },
     );

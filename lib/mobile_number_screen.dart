@@ -1,44 +1,73 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'otp_verification_screen.dart';
+import 'services/auth_service.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class MobileNumberScreen extends StatefulWidget {
+  final bool isFirstTimeUser;
+  
+  const MobileNumberScreen({
+    super.key,
+    this.isFirstTimeUser = true,
+  });
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<MobileNumberScreen> createState() => _MobileNumberScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _emailController = TextEditingController();
+class _MobileNumberScreenState extends State<MobileNumberScreen> {
+  final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _authService = AuthService();
   bool _isLoading = false;
 
-  Future<void> _sendPasswordResetEmail() async {
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendOTP() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
 
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: _emailController.text.trim(),
-      );
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(
-            content: Text('Password reset link sent! Check your email.')),
-      );
-      navigator.pop();
-    } on FirebaseAuthException catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(e.message ?? 'An error occurred.')),
-      );
+      final success = await _authService.sendPhoneOTP(_phoneController.text.trim());
+      
+      if (success) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OtpVerificationScreen(
+              verificationTarget: _phoneController.text.trim(),
+              isFirstTimeUser: widget.isFirstTimeUser,
+              onVerify: (otp) => _authService.verifyPhoneOTP(_phoneController.text.trim(), otp),
+              onResend: () => _authService.sendPhoneOTP(_phoneController.text.trim()),
+            ),
+          ),
+        );
+      } else {
+        _showErrorSnackBar('Failed to send OTP. Please try again.');
+      }
+    } catch (e) {
+      _showErrorSnackBar('An error occurred. Please try again.');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
   }
 
   @override
@@ -93,7 +122,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 children: [
                   // Header
                   Text(
-                    'Reset Password',
+                    widget.isFirstTimeUser ? "Welcome!" : "Welcome Back!",
                     style: GoogleFonts.poppins(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -102,7 +131,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Enter your email address and we\'ll send you a link to reset your password',
+                    widget.isFirstTimeUser 
+                        ? "Enter your mobile number to get started"
+                        : "Enter your mobile number to continue",
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       color: textColor.withOpacity(0.7),
@@ -110,13 +141,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 40),
                   
-                  // Email input
+                  // Mobile number input
                   TextFormField(
-                    controller: _emailController,
+                    controller: _phoneController,
                     style: TextStyle(color: textColor, fontSize: 18),
                     decoration: InputDecoration(
-                      labelText: 'Email Address',
+                      labelText: 'Mobile Number',
                       labelStyle: GoogleFonts.poppins(color: labelColor),
+                      prefixText: '+91 ',
+                      prefixStyle: GoogleFonts.poppins(
+                        color: textColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                       filled: true,
                       fillColor: inputFillColor,
                       border: OutlineInputBorder(
@@ -137,21 +174,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                     ),
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
                     validator: (value) {
-                      if (value == null || value.isEmpty || !value.contains('@')) {
-                        return 'Please enter a valid email address';
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your mobile number';
+                      }
+                      if (value.length != 10) {
+                        return 'Please enter a valid 10-digit mobile number';
+                      }
+                      if (!RegExp(r'^[6-9]\d{9}$').hasMatch(value)) {
+                        return 'Please enter a valid Indian mobile number';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 32),
                   
-                  // Send reset link button
+                  // Continue button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _sendPasswordResetEmail,
+                      onPressed: _isLoading ? null : _sendOTP,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00C853),
                         foregroundColor: Colors.white,
@@ -171,13 +215,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                             )
                           : Text(
-                              'Send Reset Link',
+                              'Continue',
                               style: GoogleFonts.poppins(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                     ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Terms and conditions
+                  Text(
+                    'By continuing, you agree to our Terms of Service and Privacy Policy',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: textColor.withOpacity(0.6),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -188,4 +243,3 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
-

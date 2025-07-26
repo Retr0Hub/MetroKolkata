@@ -314,4 +314,168 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  // Send OTP via phone (SMS)
+  Future<bool> sendPhoneOTP(String phoneNumber) async {
+    try {
+      // In a real app, you would integrate with an SMS service like Twilio
+      // For now, we'll simulate sending OTP
+      final otp = generateOTP();
+      await storeOTP(phoneNumber, otp);
+      
+      // Simulate SMS sending delay
+      await Future.delayed(const Duration(seconds: 1));
+      
+      print('OTP sent to $phoneNumber: $otp'); // Remove this in production
+      return true;
+    } catch (e) {
+      print('Error sending phone OTP: $e');
+      return false;
+    }
+  }
+
+  // Verify phone OTP
+  Future<bool> verifyPhoneOTP(String phoneNumber, String otp) async {
+    try {
+      final storedData = await _secureStorage.read(key: 'otp_$phoneNumber');
+      if (storedData == null) return false;
+
+      final otpData = jsonDecode(storedData);
+      final storedOTP = otpData['otp'];
+      final expiration = DateTime.fromMillisecondsSinceEpoch(otpData['expiration']);
+
+      if (DateTime.now().isAfter(expiration)) {
+        await _secureStorage.delete(key: 'otp_$phoneNumber');
+        return false;
+      }
+
+      final isValid = storedOTP == otp;
+      if (isValid) {
+        await _secureStorage.delete(key: 'otp_$phoneNumber');
+      }
+      
+      return isValid;
+    } catch (e) {
+      print('Error verifying phone OTP: $e');
+      return false;
+    }
+  }
+
+  // Check if user exists in database
+  Future<bool> checkUserExists(String phoneNumber) async {
+    try {
+      final doc = await _firestore.collection('users').where('phoneNumber', isEqualTo: phoneNumber).get();
+      return doc.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking user existence: $e');
+      return false;
+    }
+  }
+
+  // Create user profile
+  Future<bool> createUserProfile({
+    required String phoneNumber,
+    required String name,
+    String? email,
+    String? gender,
+  }) async {
+    try {
+      await _firestore.collection('users').add({
+        'phoneNumber': phoneNumber,
+        'name': name,
+        'email': email,
+        'gender': gender,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (e) {
+      print('Error creating user profile: $e');
+      return false;
+    }
+  }
+
+  // Set PIN for user
+  Future<bool> setPin(String phoneNumber, String pin) async {
+    try {
+      // Hash the PIN before storing
+      final hashedPin = sha256.convert(utf8.encode(pin)).toString();
+      
+      await _firestore.collection('users').where('phoneNumber', isEqualTo: phoneNumber).get().then((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          snapshot.docs.first.reference.update({
+            'pin': hashedPin,
+            'pinSetAt': FieldValue.serverTimestamp(),
+          });
+        }
+      });
+      
+      // Store PIN locally for quick access
+      await _secureStorage.write(key: 'pin_$phoneNumber', value: hashedPin);
+      
+      return true;
+    } catch (e) {
+      print('Error setting PIN: $e');
+      return false;
+    }
+  }
+
+  // Verify PIN
+  Future<bool> verifyPin(String phoneNumber, String pin) async {
+    try {
+      final hashedPin = sha256.convert(utf8.encode(pin)).toString();
+      
+      // Check local storage first
+      final localPin = await _secureStorage.read(key: 'pin_$phoneNumber');
+      if (localPin == hashedPin) {
+        return true;
+      }
+      
+      // Check database
+      final doc = await _firestore.collection('users').where('phoneNumber', isEqualTo: phoneNumber).get();
+      if (doc.docs.isNotEmpty) {
+        final storedPin = doc.docs.first.data()['pin'];
+        return storedPin == hashedPin;
+      }
+      
+      return false;
+    } catch (e) {
+      print('Error verifying PIN: $e');
+      return false;
+    }
+  }
+
+  // Check if biometric authentication is available
+  Future<bool> isBiometricAvailable() async {
+    try {
+      final isAvailable = await _localAuth.canCheckBiometrics;
+      final isDeviceSupported = await _localAuth.isDeviceSupported();
+      return isAvailable && isDeviceSupported;
+    } catch (e) {
+      print('Error checking biometric availability: $e');
+      return false;
+    }
+  }
+
+  // Authenticate with biometric
+  Future<bool> authenticateWithBiometric() async {
+    try {
+      return await _localAuth.authenticate(
+        localizedReason: 'Please authenticate to access Kolkata Metro',
+        options: const AuthenticationOptions(
+          useErrorDialogs: true,
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+    } catch (e) {
+      print('Error with biometric authentication: $e');
+      return false;
+    }
+  }
+
+  // Get SharedPreferences instance
+  Future<SharedPreferences> getSharedPreferences() async {
+    return await SharedPreferences.getInstance();
+  }
 }
