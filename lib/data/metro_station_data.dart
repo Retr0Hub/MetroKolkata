@@ -60,11 +60,6 @@ const List<MetroStation> kolkataMetroStations = [
   MetroStation(name: 'Jyotirindra Nandi', latitude: 22.4637, longitude: 88.3108, line: 'Orange'),
   MetroStation(name: 'Kavi Sukanta', latitude: 22.4723, longitude: 88.3147, line: 'Orange'),
   MetroStation(name: 'Hemanta Mukhopadhyay', latitude: 22.4788, longitude: 88.3210, line: 'Orange'),
-  MetroStation(name: 'VIP Bazar', latitude: 22.4911, longitude: 88.3304, line: 'Orange'),
-  MetroStation(name: 'Beliaghata', latitude: 22.4995, longitude: 88.3378, line: 'Orange'),
-  MetroStation(name: 'Salt Lake Sector V (Upcoming)', latitude: 22.5792, longitude: 88.4347, line: 'Orange'),
-  MetroStation(name: 'Teghoria (Upcoming)', latitude: 22.6186, longitude: 88.4241, line: 'Orange'),
-  MetroStation(name: 'Biman Bandar (Airport)', latitude: 22.6540, longitude: 88.4467, line: 'Orange'),
 ];
 
 
