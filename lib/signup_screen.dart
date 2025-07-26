@@ -177,6 +177,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'name': user.displayName,
           'email': user.email,
           'photoURL': user.photoURL,
+          'twoFactorEnabled': false,
+          'biometricEnabled': false,
           'createdAt': FieldValue.serverTimestamp(),
           'metroCardBalance': 0,
         });
@@ -271,7 +273,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                                      onPressed: _isLoading ? null : _sendOTPAndNavigate,
+                                      onPressed: _isLoading ? null : _signUpWithEmail,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonBgColor,
                     foregroundColor: buttonTextColor,
