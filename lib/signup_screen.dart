@@ -47,7 +47,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         setState(() => _otpSent = true);
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => EnhancedOtpVerificationScreen(
+            builder: (context) => ModernOtpScreen(
               email: _emailController.text.trim(),
               userName: _nameController.text.trim(),
               isSignup: true,

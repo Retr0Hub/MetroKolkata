@@ -57,7 +57,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         if (otpSent) {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => EnhancedOtpVerificationScreen(
+              builder: (context) => ModernOtpScreen(
                 email: user.email!,
                 isSignup: false,
                 onVerificationSuccess: () async {

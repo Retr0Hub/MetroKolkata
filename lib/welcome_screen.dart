@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:async';
 
+// Assuming these files exist and define LoginScreen and SignUpScreen widgets
 import 'login_screen.dart';
 import 'signup_screen.dart';
 
@@ -55,217 +57,97 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _initializeAnimations() {
-    // Image animation controller (0.8 seconds)
+    // Controller setup
     _imageController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-
-    // Text animation controller (1.2 seconds, starts after 400ms)
     _textController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-
-    // Logo animation controller (1 second, starts after 800ms)
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-
-    // Button animation controller (1 second, starts after 1200ms)
     _buttonController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-
-    // Credit animation controller (600ms, starts after 1600ms)
     _creditController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-
-    // Exit animation controller (800ms)
     _exitController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    // Image animations
-    _imageOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _imageController,
-      curve: Curves.easeInOut,
-    ));
+    // Animation definitions
+    _imageOpacity = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _imageController, curve: Curves.easeInOut));
+    _imageSlide = Tween<Offset>(begin: const Offset(0, -0.3), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _imageController, curve: Curves.easeOutCubic));
 
-    _imageSlide = Tween<Offset>(
-      begin: const Offset(0, -0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _imageController,
-      curve: Curves.easeOutCubic,
-    ));
+    _titleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _textController, curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+        CurvedAnimation(
+            parent: _textController, curve: const Interval(0.0, 0.5, curve: Curves.easeOutCubic)));
 
-    // Text animations
-    _titleOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-    ));
+    _subtitleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _textController, curve: const Interval(0.3, 0.8, curve: Curves.easeOut)));
+    _subtitleSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+        CurvedAnimation(
+            parent: _textController, curve: const Interval(0.3, 0.8, curve: Curves.easeOutCubic)));
 
-    _titleSlide = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOutCubic),
-    ));
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _logoController, curve: Curves.easeInOut));
+    _logoScale = Tween<double>(begin: 0.5, end: 1.0)
+        .animate(CurvedAnimation(parent: _logoController, curve: Curves.elasticOut));
+    _logoRotation = Tween<double>(begin: 0.5, end: 0.0)
+        .animate(CurvedAnimation(parent: _logoController, curve: Curves.easeOutCubic));
 
-    _subtitleOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
-    ));
+    _loginButtonOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _buttonController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)));
+    _loginButtonSlide = Tween<Offset>(begin: const Offset(0, 1.0), end: Offset.zero).animate(
+        CurvedAnimation(
+            parent: _buttonController, curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic)));
 
-    _subtitleSlide = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _textController,
-      curve: const Interval(0.3, 0.8, curve: Curves.easeOutCubic),
-    ));
+    _signupButtonOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _buttonController, curve: const Interval(0.4, 1.0, curve: Curves.easeOut)));
+    _signupButtonSlide = Tween<Offset>(begin: const Offset(0, 1.0), end: Offset.zero).animate(
+        CurvedAnimation(
+            parent: _buttonController, curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic)));
 
-    // Logo animations
-    _logoOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeInOut,
-    ));
+    _creditOpacity = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _creditController, curve: Curves.easeIn));
+    _creditSlide = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _creditController, curve: Curves.easeOutCubic));
 
-    _logoScale = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.elasticOut,
-    ));
-
-    _logoRotation = Tween<double>(
-      begin: 0.5,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    // Button animations
-    _loginButtonOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _buttonController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-    ));
-
-    _loginButtonSlide = Tween<Offset>(
-      begin: const Offset(0, 1.0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _buttonController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
-    ));
-
-    _signupButtonOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _buttonController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
-    ));
-
-    _signupButtonSlide = Tween<Offset>(
-      begin: const Offset(0, 1.0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _buttonController,
-      curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
-    ));
-
-    // Credit animations
-    _creditOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _creditController,
-      curve: Curves.easeIn,
-    ));
-
-    _creditSlide = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _creditController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    // Exit animations - Smooth position transition
-    _exitTextSlide = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, -205), // Move from 325px to 120px (difference = 205px)
-    ).animate(CurvedAnimation(
-      parent: _exitController,
-      curve: Curves.easeInOutCubic,
-    ));
-
-    _exitElementsOpacity = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _exitController,
-      curve: Curves.easeOut,
-    ));
+    _exitTextSlide = Tween<Offset>(begin: Offset.zero, end: const Offset(0, -205))
+        .animate(CurvedAnimation(parent: _exitController, curve: Curves.easeInOutCubic));
+    _exitElementsOpacity = Tween<double>(begin: 1.0, end: 0.0)
+        .animate(CurvedAnimation(parent: _exitController, curve: Curves.easeOut));
   }
 
   void _startAnimations() async {
-    // Start image animation immediately
     _imageController.forward();
-    
-    // Start text animation after 400ms
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) _textController.forward();
-    
-    // Start logo animation after 800ms total
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) _logoController.forward();
-    
-    // Start button animations after 1200ms total
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) _buttonController.forward();
-    
-    // Start credit animation after 1600ms total
     await Future.delayed(const Duration(milliseconds: 400));
     if (mounted) _creditController.forward();
   }
 
   void _navigateWithTransition(Widget destination) async {
-    setState(() {
-      _isExiting = true;
-    });
-
-    // Start exit animation
+    setState(() => _isExiting = true);
     _exitController.forward();
-
-    // Wait for animation to complete, then navigate
     await Future.delayed(const Duration(milliseconds: 800));
-    
+
     if (mounted) {
       Navigator.push(
         context,
@@ -285,20 +167,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _handleBackTransition() {
-    // Reset exit state and restart welcome animations just like initial startup
-    setState(() {
-      _isExiting = false;
-    });
-    
-    // Reset all controllers to initial state
+    setState(() => _isExiting = false);
     _imageController.reset();
     _textController.reset();
     _logoController.reset();
     _buttonController.reset();
     _creditController.reset();
     _exitController.reset();
-    
-    // Restart the full welcome animation sequence
     _startAnimations();
   }
 
@@ -316,17 +191,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     final backgroundColor = isDarkMode ? Colors.black : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black;
     final borderColor = isDarkMode ? Colors.white : Colors.black;
-    final metroColor = isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
-          // Animated background image
+          // Animated background for entry
           if (!_isExiting)
             AnimatedBuilder(
               animation: _imageController,
@@ -335,95 +208,90 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   position: _imageSlide,
                   child: FadeTransition(
                     opacity: _imageOpacity,
-                    child: ClipPath(
-                      clipper: BottomCurveClipper(),
-                      child: Image.asset(
-                        metroImage,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: 450,
-                      ),
-                    ),
+                    child: child,
                   ),
                 );
               },
+              child: ClipPath(
+                clipper: BottomCurveClipper(),
+                child: Image.asset(
+                  metroImage,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 450,
+                ),
+              ),
             ),
-          
-          // Exit animation overlay for background
+
+          // Fading background for exit
           if (_isExiting)
             AnimatedBuilder(
               animation: _exitController,
               builder: (context, child) {
                 return FadeTransition(
                   opacity: _exitElementsOpacity,
-                  child: ClipPath(
-                    clipper: BottomCurveClipper(),
-                    child: Image.asset(
-                      metroImage,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 450,
-                    ),
-                  ),
+                  child: child,
                 );
               },
+              child: ClipPath(
+                clipper: BottomCurveClipper(),
+                child: Image.asset(
+                  metroImage,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 450,
+                ),
+              ),
             ),
 
-          // Exit animation layout - text smoothly moves to final position
+          // Sliding text for exit transition
           if (_isExiting)
             Positioned(
-              top: 325, // Start from original position
-              left: 24, // Align with form content
+              top: 325,
+              left: 24,
               right: 24,
               child: AnimatedBuilder(
                 animation: _exitController,
                 builder: (context, child) {
                   return Transform.translate(
-                    offset: Offset(0, _exitTextSlide.value.dy),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome To',
-                          style: TextStyle(
-                            fontFamily: 'Arial',
-                            fontSize: 26,
-                            color: metroColor,
-                            fontWeight: FontWeight.w500,
-
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Kolkata Metro',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 46,
-                              color: metroColor,
-                              fontFamily: 'Arial',
-                            ),
-                            textAlign: TextAlign.left,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ],
-                    ),
+                    offset: _exitTextSlide.value,
+                    child: child,
                   );
                 },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome To',
+                      style: TextStyle(
+                        fontFamily: 'Arial',
+                        fontSize: 26,
+                        color: textColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      'Kolkata Metro',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 46,
+                        color: textColor,
+                        fontFamily: 'Arial',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
+          // Main content for entry animation
           if (!_isExiting)
-            // Normal layout for initial animation
             Padding(
               padding: const EdgeInsets.only(top: 225.0),
               child: Column(
                 children: [
                   const SizedBox(height: 100),
-                  // Animated welcome text (normal state only)
+                  // Animated welcome text
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -437,35 +305,28 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                               position: _titleSlide,
                               child: FadeTransition(
                                 opacity: _titleOpacity,
-                                                              child: Text(
-                                'Welcome To',
-                                style: TextStyle(
-                                  fontFamily: 'Arial',
-                                  fontSize: 26,
-                                  color: metroColor,
-                                                                     fontWeight: FontWeight.w500,
+                                child: Text(
+                                  'Welcome To',
+                                  style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    fontSize: 26,
+                                    color: textColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                                textAlign: TextAlign.left,
-                              ),
                               ),
                             ),
                             SlideTransition(
                               position: _subtitleSlide,
                               child: FadeTransition(
                                 opacity: _subtitleOpacity,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Kolkata Metro',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 46,
-                                      color: metroColor,
-                                      fontFamily: 'Arial',
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    maxLines: 1,
+                                child: Text(
+                                  'Kolkata Metro',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 46,
+                                    color: textColor,
+                                    fontFamily: 'Arial',
                                   ),
                                 ),
                               ),
@@ -476,7 +337,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ),
                   ),
                   const SizedBox(height: 30),
-                  // Animated logo (normal state only)
+                  // Animated logo
                   AnimatedBuilder(
                     animation: _logoController,
                     builder: (context, child) {
@@ -486,26 +347,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           scale: _logoScale.value,
                           child: Transform.rotate(
                             angle: _logoRotation.value,
-                            child: SvgPicture.asset(
-                              logo1,
-                              width: 40,
-                              height: 40,
-                              color: textColor,
-                              placeholderBuilder: (context) =>
-                                  CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(textColor),
-                              ),
-                            ),
+                            child: child,
                           ),
                         ),
                       );
                     },
+                    child: SvgPicture.asset(
+                      logo1,
+                      width: 40,
+                      height: 40,
+                      colorFilter: ColorFilter.mode(textColor, BlendMode.srcIn),
+                      placeholderBuilder: (context) =>
+                          CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(textColor),
+                      ),
+                    ),
                   ),
-                
-                  const SizedBox(height: 15),
                   const Spacer(),
-                  
-                  // Animated login button (for welcome screen entry)
+                  // Animated login button
                   AnimatedBuilder(
                     animation: _buttonController,
                     builder: (context, child) {
@@ -513,22 +372,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         position: _loginButtonSlide,
                         child: FadeTransition(
                           opacity: _loginButtonOpacity,
-                          child: _buildButton(
-                            context,
-                            'Login',
-                            Colors.white,
-                            Colors.black,
-                            () => _navigateWithTransition(const LoginScreen()),
-                            borderColor: Colors.black,
-                          ),
+                          child: child,
                         ),
                       );
                     },
+                    child: _buildButton(
+                      context,
+                      'Login',
+                      Colors.white,
+                      Colors.black,
+                      () => _navigateWithTransition(const LoginScreen()),
+                      borderColor: Colors.black,
+                    ),
                   ),
-                  
                   const SizedBox(height: 10),
-                  
-                  // Animated signup button (for welcome screen entry)
+                  // Animated signup button
                   AnimatedBuilder(
                     animation: _buttonController,
                     builder: (context, child) {
@@ -536,22 +394,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         position: _signupButtonSlide,
                         child: FadeTransition(
                           opacity: _signupButtonOpacity,
-                          child: _buildButton(
-                            context,
-                            'Create an account',
-                            Colors.black,
-                            Colors.white,
-                            () => _navigateWithTransition(const SignUpScreen()),
-                            borderColor: borderColor,
-                          ),
+                          child: child,
                         ),
                       );
                     },
+                    child: _buildButton(
+                      context,
+                      'Create an account',
+                      Colors.black,
+                      Colors.white,
+                      () => _navigateWithTransition(const SignUpScreen()),
+                      borderColor: borderColor,
+                    ),
                   ),
-                  
                   const SizedBox(height: 20),
-                  
-                  // Credit text with animation (normal state only)
+                  // Animated credit text
                   AnimatedBuilder(
                     animation: _creditController,
                     builder: (context, child) {
@@ -559,40 +416,37 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         position: _creditSlide,
                         child: FadeTransition(
                           opacity: _creditOpacity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                style: TextStyle(
-                                  fontFamily: 'Arial',
-                                  fontSize: 14,
-                                  color: textColor.withOpacity(0.7),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                children: [
-                                  const TextSpan(text: 'Made with '),
-                                  TextSpan(
-                                    text: '❤️',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                  const TextSpan(text: ' by Ayush'),
-                                ],
-                              ),
-                            ),
-                          ),
+                          child: child,
                         ),
                       );
                     },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontFamily: 'Arial',
+                            fontSize: 14,
+                            color: textColor.withOpacity(0.7),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          children: const [
+                            TextSpan(text: 'Made with '),
+                            TextSpan(
+                              text: '❤️',
+                              style: TextStyle(fontSize: 16, color: Colors.red),
+                            ),
+                            TextSpan(text: ' by Ayush'),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  
                   const SizedBox(height: 40),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -621,19 +475,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       ),
     );
   }
 }
 
+// Wrapper for the next screen to handle shared animations
 class WelcomeTextWrapper extends StatefulWidget {
   final Widget child;
   final Animation<double> animation;
   final VoidCallback? onBack;
 
   const WelcomeTextWrapper({
+    super.key,
     required this.child,
     required this.animation,
     this.onBack,
@@ -657,71 +513,36 @@ class _WelcomeTextWrapperState extends State<WelcomeTextWrapper>
   @override
   void initState() {
     super.initState();
-    
+
     _headerController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
+        duration: const Duration(milliseconds: 600), vsync: this);
     _reverseController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
+        duration: const Duration(milliseconds: 800), vsync: this);
 
-    _headerOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-    ));
+    _headerOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _headerController, curve: const Interval(0.0, 0.5, curve: Curves.easeOut)));
+    _contentOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: _headerController, curve: const Interval(0.2, 1.0, curve: Curves.easeOut)));
+    _contentSlide =
+        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: _headerController,
+                curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic)));
 
-    _contentOpacity = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
-    ));
+    _reverseTextSlide = Tween<Offset>(begin: Offset.zero, end: const Offset(0, 205))
+        .animate(CurvedAnimation(parent: _reverseController, curve: Curves.easeInOutCubic));
+    _reverseUIOpacity = Tween<double>(begin: 1.0, end: 0.0)
+        .animate(CurvedAnimation(parent: _reverseController, curve: Curves.easeOut));
+    _reverseUISlide = Tween<Offset>(begin: Offset.zero, end: const Offset(0, 0.5))
+        .animate(CurvedAnimation(parent: _reverseController, curve: Curves.easeInOutCubic));
 
-    _contentSlide = Tween<Offset>(
-      begin: const Offset(0, 0.2),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-    ));
-
-    _reverseTextSlide = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, 205), // Move text from 120px back to 325px (difference = 205px)
-    ).animate(CurvedAnimation(
-      parent: _reverseController,
-      curve: Curves.easeInOutCubic,
-    ));
-
-    _reverseUIOpacity = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _reverseController,
-      curve: Curves.easeOut,
-    ));
-
-    _reverseUISlide = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, 0.5), // Slide down like original entry animation
-    ).animate(CurvedAnimation(
-      parent: _reverseController,
-      curve: Curves.easeInOutCubic,
-    ));
-
-    // Start the header animation after the page transition begins
     widget.animation.addListener(_onPageAnimationChange);
   }
 
   void _onPageAnimationChange() {
-    if (widget.animation.value > 0.3 && !_headerController.isAnimating && _headerController.value == 0) {
+    if (widget.animation.value > 0.3 &&
+        !_headerController.isAnimating &&
+        _headerController.value == 0) {
       _headerController.forward();
     }
   }
@@ -740,125 +561,113 @@ class _WelcomeTextWrapperState extends State<WelcomeTextWrapper>
     final metroColor = isDarkMode ? Colors.white : Colors.black;
 
     return PopScope(
-      canPop: false, // Prevent default pop behavior
+      canPop: false,
       onPopInvoked: (didPop) async {
         if (!didPop) {
-          // Start reverse animation
           _reverseController.forward();
-          
-          // Wait for animation to complete
           await Future.delayed(const Duration(milliseconds: 800));
-          
-          // Then call the back handler and actually pop
           widget.onBack?.call();
           if (mounted) {
             Navigator.of(context).pop();
           }
         }
       },
-              child: Scaffold(
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          body: Stack(
-            children: [
-                             // Main content with login/signup form (slides and fades during reverse)
-               AnimatedBuilder(
-                 animation: _reverseController,
-                 builder: (context, child) {
-                   return SlideTransition(
-                     position: _reverseUISlide,
-                     child: FadeTransition(
-                       opacity: _reverseUIOpacity,
-                       child: FadeTransition(
-                         opacity: widget.animation,
-                         child: AnimatedBuilder(
-                           animation: _headerController,
-                           builder: (context, child) {
-                             return SlideTransition(
-                               position: _contentSlide,
-                               child: FadeTransition(
-                                 opacity: _contentOpacity,
-                                 child: widget.child,
-                               ),
-                             );
-                           },
-                         ),
-                       ),
-                     ),
-                   );
-                 },
-               ),
-                                       // Welcome text overlay with reverse animation (NO fade at all)
-               AnimatedBuilder(
-                 animation: _reverseController,
-                 builder: (context, child) {
-                   return Transform.translate(
-                     offset: Offset(0, _reverseTextSlide.value.dy),
-                     child: Container(
-                         width: double.infinity,
-                         padding: const EdgeInsets.only(
-                           top: 120, // Moved up from 160px
-                           left: 24, // Align with form content (matches login/signup padding)
-                           right: 24,
-                           bottom: 20,
-                         ),
-                        child: AnimatedBuilder(
-                          animation: _headerController,
-                          builder: (context, child) {
-                            return FadeTransition(
-                              opacity: _headerOpacity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Welcome To',
-                                    style: TextStyle(
-                                      fontFamily: 'Arial',
-                                      fontSize: 26,
-                                      color: metroColor,
-                                      fontWeight: FontWeight.w500,
-          
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Kolkata Metro',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 46,
-                                        color: metroColor,
-                                        fontFamily: 'Arial',
-          
-                                      ),
-                                      textAlign: TextAlign.left,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+      child: Scaffold(
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        body: Stack(
+          children: [
+            // Main form content
+            AnimatedBuilder(
+              animation: _reverseController,
+              builder: (context, child) {
+                return SlideTransition(
+                  position: _reverseUISlide,
+                  child: FadeTransition(
+                    opacity: _reverseUIOpacity,
+                    child: child,
+                  ),
+                );
+              },
+              child: FadeTransition(
+                opacity: widget.animation,
+                child: AnimatedBuilder(
+                  animation: _headerController,
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position: _contentSlide,
+                      child: FadeTransition(
+                        opacity: _contentOpacity,
+                        child: widget.child,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            // Welcome text overlay
+            AnimatedBuilder(
+              animation: _reverseController,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: _reverseTextSlide.value,
+                  child: child,
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(
+                    top: 120, left: 24, right: 24, bottom: 20),
+                child: AnimatedBuilder(
+                  animation: _headerController,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _headerOpacity,
+                      child: child,
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Welcome To',
+                        style: TextStyle(
+                          fontFamily: 'Arial',
+                          fontSize: 26,
+                          color: metroColor,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                   );
-                 },
-               ),
-           ],
-         ),
+                      Text(
+                        'Kolkata Metro',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 46,
+                          color: metroColor,
+                          fontFamily: 'Arial',
+                        ),
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
+// Custom clipper for the curved background
 class BottomCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height - 50);
     path.quadraticBezierTo(
-      size.width / 2, size.height + 50, size.width, size.height - 50);
+        size.width / 2, size.height + 50, size.width, size.height - 50);
     path.lineTo(size.width, 0);
     path.close();
     return path;

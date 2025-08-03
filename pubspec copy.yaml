@@ -9,35 +9,35 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: any
-  provider: any
-  firebase_core: any
-  firebase_auth: any
-  cloud_firestore: any
-  google_sign_in: any
-  google_maps_flutter: any
-  sliding_up_panel: any
-  google_fonts: any
-  shared_preferences: any
-  geolocator: any
-  geocoding: any
-  intl: any
-  local_auth: any
-  mailer: any
-  crypto: any
-  http: any
-  flutter_secure_storage: any
-  pin_code_fields: any
-  timer_builder: any
-  liquid_glass_renderer: any
-  flutter_animated_button: any
-  rive: any
-  sms_autofill: any 
+  flutter_svg: ^2.0.9
+  provider: ^6.1.5
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  google_sign_in: ^6.2.1
+  google_maps_flutter: ^2.6.1
+  sliding_up_panel: ^2.0.0+1
+  google_fonts: ^6.3.0
+  shared_preferences: ^2.2.3
+  geolocator: ^12.0.0
+  geocoding: ^3.0.0
+  intl: ^0.20.2
+  local_auth: ^2.3.0
+  mailer: ^6.0.1
+  crypto: ^3.0.3
+  http: ^1.1.0
+  flutter_secure_storage: ^9.2.2
+  pin_code_fields: ^8.0.1
+  timer_builder: ^2.0.0
+  liquid_glass_renderer: ^0.1.1-dev.10
+  flutter_animated_button: ^2.0.4
+  rive: ^0.13.20
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: any
+  flutter_lints: ^5.0.0
+  sms_autofill: ^2.3.0 
 
 flutter:
   uses-material-design: true

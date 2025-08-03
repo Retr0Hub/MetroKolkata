@@ -1,9 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'background_capture_widget.dart';
-import 'liquid_glass_lens_shader.dart';
 
 // --- Color Constants ---
 const Color kScaffoldBackground = Color(0xFF1A1A52);
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: kScaffoldBackground,
+      statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     ));
 
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'Metro App UI',
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: kScaffoldBackground,
+        scaffoldBackgroundColor: Colors.transparent,
         textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
       ),
       home: const HomeScreen(),
@@ -46,116 +45,157 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
-  
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  int _selectedIndex = 0;
   bool _isHistoryVisible = false;
-  Widget _navIcon(IconData icon, int index) {
-  return GestureDetector(
-    onTap: () => _onItemTapped(index),
-    child: Icon(
-      icon,
-      color: _selectedIndex == index ? kLightBlue : Colors.grey[500],
-      size: 28,
-    ),
-  );
-}
+  int _selectedIndex = 1;
 
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Widget _navItem({required IconData icon, required String label, required int index}) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIndex = index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? Colors.blueAccent : Colors.white70,
+            size: 26,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: isSelected ? Colors.blueAccent : Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
   }
-  
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDarkMode ? Colors.black : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final borderColor = isDarkMode ? Colors.white : Colors.black;
+    final metroColor = isDarkMode ? const Color.fromARGB(255, 255, 255, 255) : const Color.fromARGB(255, 0, 0, 0);
+
     return Stack(
-  children: [
-    // Gradient background
-    Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.black, Color(0xFF1A1A52)], // top → bottom
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+      children: [
+        // 🔹 Background Gradient
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: isDarkMode
+                  ? [Colors.black, kScaffoldBackground]
+                  : [Colors.white, Colors.grey[300]!],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
         ),
-      ),
-    ),
-    Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 20.0),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    gradientCardSample(),
-                    Positioned(
-                      bottom: -35,
-                      left: 0,
-                      child: _buildViewInOutButton(),
+
+        // 🔹 Main content
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(textColor),
+                        const SizedBox(height: 20.0),
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            gradientCardSample(),
+                            Positioned(
+                              bottom: -35,
+                              left: 0,
+                              child: _buildViewInOutButton(),
+                            ),
+                          ],
+                        ),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          child: _isHistoryVisible
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 30.0),
+                                  child: _buildHistorySection(),
+                                )
+                              : const SizedBox(),
+                        ),
+                        const SizedBox(height: 30),
+                        _buildActionGrid(),
+                        const SizedBox(height: 100),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: _isHistoryVisible
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: _buildHistorySection(),
-                        )
-                      : const SizedBox(),
-                ),
-                const SizedBox(height: 30),
-                _buildActionGrid(),
               ],
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: BackgroundCaptureWidget(
-  width: MediaQuery.of(context).size.width,
-  height: 80,
-  initialPosition: Offset(0, MediaQuery.of(context).size.height - 80),
-  backgroundKey: GlobalKey(), // optional, if you're capturing live background
-  shader: LiquidGlassLensShader()..initialize(),
-  child: ClipRRect(
-    borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-    child: Container(
-      height: 80,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      color: Colors.white.withOpacity(0.05),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _navIcon(Icons.home, 0),
-          _navIcon(Icons.account_balance_wallet_outlined, 1),
-          _navIcon(Icons.edit_outlined, 2),
-          _navIcon(Icons.person_outline, 3),
-        ],
-      ),
-    ),
-  ),
-),
 
-),
-  ]
+        // 🔹 Glass Dock Overlay
+        Positioned(
+          bottom: 16,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FractionallySizedBox(
+              widthFactor: 0.85,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _navItem(icon: Icons.credit_card, label: "Pass", index: 0),
+                        _navItem(icon: Icons.home_outlined, label: "Home", index: 1),
+                        _navItem(icon: Icons.explore_outlined, label: "Navigate", index: 2),
+                        _navItem(icon: Icons.call_outlined, label: "Contact", index: 3),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
-  
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(Color textColor) {
     return Row(
       children: [
         const CircleAvatar(
@@ -166,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Text(
           'Location from nearest metro',
           style: TextStyle(
-            color: kSubtleTextColor,
+            color: textColor.withOpacity(0.7),
             fontSize: 15,
           ),
         ),
@@ -175,115 +215,112 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget gradientCardSample() {
-  return Container(
-    height: 200,
-    width: double.infinity,
-    padding: const EdgeInsets.all(32),
-    decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color(0xFF846AFF),
-          Color(0xFF755EE8),
-          Colors.purpleAccent,
-          Colors.amber,
+    return Container(
+      height: 200,
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF846AFF),
+            Color(0xFF755EE8),
+            Colors.purpleAccent,
+            Colors.amber,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Metro Card',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                  const Spacer(),
+                  SvgPicture.asset(
+                    'lib/assets/logo.svg',
+                    height: 35,
+                    width: 35,
+                    color: Colors.white54,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '4111 7679 8689 9700',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
+          ),
+          const Text(
+            '\$3,000',
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Metro Card',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'monospace',
-                  ),
-                ),
-                const Spacer(),
-                SvgPicture.asset(
-                  'lib/assets/logo.svg',
-                  height: 35,
-                  width: 35,
-                  color: Colors.white54,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '4111 7679 8689 9700',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontFamily: 'monospace',
-              ),
-            ),
-          ],
-        ),
-        const Text(
-          '\$3,000',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
+    );
+  }
+
+  Widget _buildViewInOutButton() {
+    return ClipPath(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.5,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        decoration: const BoxDecoration(
+          color: kLightBlue,
+          borderRadius: BorderRadius.only(
+            bottomRight: Radius.circular(16),
+            bottomLeft: Radius.circular(16),
           ),
         ),
-      ],
-    ),
-  );
-}
-
-
-Widget _buildViewInOutButton() {
-  return ClipPath(
-    child: Container(
-      width: MediaQuery.of(context).size.width * 0.5,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      decoration: const BoxDecoration(
-        color: kLightBlue,
-        borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
-        ),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _isHistoryVisible = !_isHistoryVisible;
-          });
-        },
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              _isHistoryVisible
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down,
-              color: Colors.black,
-            ),
-            const SizedBox(width: 4),
-            const Text(
-              'View In & Out',
-              style: TextStyle(
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              _isHistoryVisible = !_isHistoryVisible;
+            });
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                _isHistoryVisible ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                 color: Colors.black,
-                fontWeight: FontWeight.w600,
               ),
-            ),
-          ],
+              const SizedBox(width: 4),
+              const Text(
+                'View In & Out',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildHistorySection() {
     return Column(
@@ -340,11 +377,7 @@ class _HistoryItem extends StatelessWidget {
   final String type;
   final String time;
 
-  const _HistoryItem({
-    required this.station,
-    required this.type,
-    required this.time,
-  });
+  const _HistoryItem({required this.station, required this.type, required this.time});
 
   @override
   Widget build(BuildContext context) {
@@ -353,8 +386,7 @@ class _HistoryItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: kChipColor,
               borderRadius: BorderRadius.circular(20),

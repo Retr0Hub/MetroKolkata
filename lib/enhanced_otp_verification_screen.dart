@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'services/auth_service.dart';
+import 'services/auth_service.dart'; // Assuming this path is correct
 
-class EnhancedOtpVerificationScreen extends StatefulWidget {
+class ModernOtpScreen extends StatefulWidget {
   final String email;
   final String? userName;
   final VoidCallback onVerificationSuccess;
   final VoidCallback? onResendOTP;
   final bool isSignup;
 
-  const EnhancedOtpVerificationScreen({
+  const ModernOtpScreen({
     super.key,
     required this.email,
     this.userName,
@@ -21,20 +22,23 @@ class EnhancedOtpVerificationScreen extends StatefulWidget {
   });
 
   @override
-  State<EnhancedOtpVerificationScreen> createState() => _EnhancedOtpVerificationScreenState();
+  State<ModernOtpScreen> createState() => _ModernOtpScreenState();
 }
 
-class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationScreen>
-    with TickerProviderStateMixin {
+class _ModernOtpScreenState extends State<ModernOtpScreen> with TickerProviderStateMixin {
   final TextEditingController _otpController = TextEditingController();
   final AuthService _authService = AuthService();
+  // Stream controller for the shake animation on error
+  final StreamController<ErrorAnimationType> _errorController = StreamController<ErrorAnimationType>();
   
   bool _isLoading = false;
   bool _canResend = false;
   int _resendCooldown = 60;
   Timer? _resendTimer;
+  
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
@@ -45,16 +49,13 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
 
   void _setupAnimations() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
     _animationController.forward();
   }
 
@@ -63,6 +64,7 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
     _resendTimer?.cancel();
     _animationController.dispose();
     _otpController.dispose();
+    _errorController.close(); // Close the stream controller
     super.dispose();
   }
 
@@ -70,38 +72,40 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
     _canResend = false;
     _resendCooldown = 60;
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (_resendCooldown > 0) {
-        setState(() {
-          _resendCooldown--;
-        });
+        setState(() => _resendCooldown--);
       } else {
         _resendTimer?.cancel();
-        setState(() {
-          _canResend = true;
-        });
+        setState(() => _canResend = true);
       }
     });
   }
 
   Future<void> _verifyOTP() async {
-    if (_otpController.text.length != 6) {
-      _showErrorSnackBar('Please enter the complete 6-digit OTP');
-      return;
-    }
+    if (_otpController.text.length != 6) return;
 
     setState(() => _isLoading = true);
+    FocusScope.of(context).unfocus(); // Hide keyboard
 
     try {
       final isValid = await _authService.verifyOTP(widget.email, _otpController.text);
       
       if (isValid) {
-        _showSuccessSnackBar('OTP verified successfully!');
+        _showSuccessSnackBar('Verification successful!');
+        // A small delay to let the user see the success message before navigating
+        await Future.delayed(const Duration(milliseconds: 500));
         widget.onVerificationSuccess();
       } else {
+        _errorController.add(ErrorAnimationType.shake); // Trigger shake animation
         _showErrorSnackBar('Invalid or expired OTP. Please try again.');
         _otpController.clear();
       }
     } catch (e) {
+      _errorController.add(ErrorAnimationType.shake);
       _showErrorSnackBar('An error occurred. Please try again.');
     } finally {
       if (mounted) {
@@ -111,7 +115,7 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
   }
 
   Future<void> _resendOTP() async {
-    if (!_canResend) return;
+    if (!_canResend || _isLoading) return;
 
     setState(() => _isLoading = true);
 
@@ -124,12 +128,12 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
       }
 
       if (success) {
-        _showSuccessSnackBar('New OTP sent to your email');
+        _showSuccessSnackBar('A new OTP has been sent to your email');
         _startResendTimer();
         _otpController.clear();
         widget.onResendOTP?.call();
       } else {
-        _showErrorSnackBar('Failed to resend OTP. Please try again.');
+        _showErrorSnackBar('Failed to resend OTP. Please try again later.');
       }
     } catch (e) {
       _showErrorSnackBar('An error occurred while resending OTP.');
@@ -141,230 +145,144 @@ class _EnhancedOtpVerificationScreenState extends State<EnhancedOtpVerificationS
   }
 
   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red.shade700,
+      behavior: SnackBarBehavior.floating,
+    ));
   }
 
   void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green.shade700,
+      behavior: SnackBarBehavior.floating,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = Colors.deepPurple; // A modern, friendly color
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          'Verify Email',
-          style: GoogleFonts.roboto(
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
+        title: Text('Verification', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: theme.iconTheme.color),
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 40),
-              
-              // Email icon
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.email_outlined,
-                  size: 40,
-                  color: Colors.blue.shade600,
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Title
-              Text(
-                'Check Your Email',
-                style: GoogleFonts.roboto(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Description
-              Text(
-                'We\'ve sent a 6-digit verification code to',
-                style: GoogleFonts.roboto(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 8),
-              
-              Text(
-                widget.email,
-                style: GoogleFonts.roboto(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blue.shade600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // OTP Input
-              PinCodeTextField(
-                appContext: context,
-                length: 6,
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                animationType: AnimationType.fade,
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.box,
-                  borderRadius: BorderRadius.circular(12),
-                  fieldHeight: 60,
-                  fieldWidth: 50,
-                  activeFillColor: Colors.blue.shade50,
-                  inactiveFillColor: Colors.grey.shade100,
-                  selectedFillColor: Colors.blue.shade100,
-                  activeColor: Colors.blue.shade600,
-                  inactiveColor: Colors.grey.shade300,
-                  selectedColor: Colors.blue.shade600,
-                ),
-                animationDuration: const Duration(milliseconds: 300),
-                enableActiveFill: true,
-                onCompleted: (value) {
-                  _verifyOTP();
-                },
-                onChanged: (value) {
-                  // Auto-verify when 6 digits are entered
-                  if (value.length == 6) {
-                    _verifyOTP();
-                  }
-                },
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Verify Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text(
-                          'Verify Code',
-                          style: GoogleFonts.roboto(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Resend OTP
-              Row(
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Engaging Header Graphic
+                  SvgPicture.asset(
+                    'assets/icons/shield_check.svg', // Use a relevant and clean SVG icon
+                    height: 100,
+                    colorFilter: ColorFilter.mode(primaryColor, BlendMode.srcIn),
+                  ),
+                  const SizedBox(height: 32),
+                  
+                  // Title
                   Text(
-                    "Didn't receive the code? ",
-                    style: GoogleFonts.roboto(
-                      fontSize: 14,
-                      color: Colors.grey[600],
+                    'Enter Verification Code',
+                    style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Description
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(fontSize: 15, color: Colors.grey[600], height: 1.5),
+                        children: [
+                          const TextSpan(text: "We've sent a 6-digit code to "),
+                          TextSpan(
+                            text: widget.email,
+                            style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: _canResend && !_isLoading ? _resendOTP : null,
-                    child: Text(
-                      _canResend
-                          ? 'Resend Code'
-                          : 'Resend in ${_resendCooldown}s',
-                      style: GoogleFonts.roboto(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: _canResend ? Colors.blue.shade600 : Colors.grey,
+                  const SizedBox(height: 40),
+                  
+                  // OTP Input Fields
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: PinCodeTextField(
+                      appContext: context,
+                      length: 6,
+                      controller: _otpController,
+                      readOnly: _isLoading,
+                      keyboardType: TextInputType.number,
+                      animationType: AnimationType.fade,
+                      errorAnimationController: _errorController,
+                      pinTheme: PinTheme(
+                        shape: PinCodeFieldShape.box,
+                        borderRadius: BorderRadius.circular(12),
+                        fieldHeight: 55,
+                        fieldWidth: 45,
+                        borderWidth: 1.5,
+                        activeFillColor: primaryColor.withOpacity(0.05),
+                        inactiveFillColor: Colors.grey.shade100,
+                        selectedFillColor: primaryColor.withOpacity(0.1),
+                        activeColor: primaryColor,
+                        inactiveColor: Colors.grey.shade300,
+                        selectedColor: primaryColor,
                       ),
+                      animationDuration: const Duration(milliseconds: 300),
+                      enableActiveFill: true,
+                      onCompleted: (value) => _verifyOTP(),
+                      onChanged: (value) {},
+                    ),
+                  ),
+                  if (_isLoading) ...[
+                    const SizedBox(height: 20),
+                    const CircularProgressIndicator(),
+                  ],
+                  const SizedBox(height: 32),
+                  
+                  // Resend OTP Text
+                  RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
+                      children: [
+                        const TextSpan(text: "Didn't receive the code? "),
+                        _canResend
+                            ? TextSpan(
+                                text: 'Resend',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                // Implement recognizer for tap events
+                              )
+                            : TextSpan(
+                                text: 'Resend in ${_resendCooldown}s',
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                              ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              
-              const SizedBox(height: 16),
-              
-              // Timer indicator
-              if (!_canResend)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.timer,
-                        size: 16,
-                        color: Colors.orange.shade600,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Code expires in ${_resendCooldown}s',
-                        style: GoogleFonts.roboto(
-                          fontSize: 12,
-                          color: Colors.orange.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
       ),
