@@ -48,7 +48,7 @@ android {
 
     defaultConfig {
         applicationId = "com.metro.kolkata"
-        minSdk = flutter.minSdkVersion
+        minSdkVersion(23)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
