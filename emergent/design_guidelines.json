@@ -1,0 +1,93 @@
+{
+  "theme": "dark",
+  "archetype": "2 (Performance Pro / Neon Dark Transit)",
+  "colors": {
+    "background": "#0A0A0B",
+    "surface": "#1A1A1C",
+    "surface_elevated": "#25252A",
+    "primary": "#FF8C00",
+    "secondary": "#0078D7",
+    "metro_lines": {
+      "blue": "#0078D7",
+      "green": "#00B259",
+      "purple": "#800080",
+      "orange": "#FF8C00"
+    },
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "border": "rgba(255, 255, 255, 0.1)"
+  },
+  "typography": {
+    "headings": "Outfit",
+    "body": "Work Sans",
+    "scales": {
+      "h1": "text-4xl tracking-tight font-black",
+      "h2": "text-2xl tracking-tight font-bold",
+      "h3": "text-xl font-semibold",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm uppercase tracking-widest font-semibold"
+    }
+  },
+  "spacing_and_layout": {
+    "app_container": "max-w-md mx-auto h-screen bg-[#0A0A0B] text-white overflow-hidden relative shadow-2xl ring-1 ring-white/10 flex flex-col",
+    "main_content": "flex-1 overflow-y-auto pb-24 px-4 pt-6 no-scrollbar",
+    "card_padding": "p-5",
+    "border_radius": {
+      "card": "rounded-3xl",
+      "button": "rounded-full",
+      "chip": "rounded-full"
+    }
+  },
+  "surfaces_and_micro_themes": {
+    "bottom_nav": "fixed bottom-0 left-0 right-0 h-20 bg-black/80 backdrop-blur-2xl border-t border-white/10 flex justify-around items-center px-4 pb-safe max-w-md mx-auto z-50",
+    "glass_header": "sticky top-0 z-40 bg-black/70 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex items-center justify-between",
+    "metro_card": "relative overflow-hidden rounded-3xl bg-[#1A1A1C] border border-white/10 shadow-lg p-6",
+    "route_card": "bg-[#1A1A1C] border border-white/5 rounded-3xl p-5 hover:border-white/20 transition-all duration-300"
+  },
+  "animation_and_interactions": {
+    "button_hover": "transition-transform active:scale-95 duration-200",
+    "card_entrance": "framer-motion initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.4}}",
+    "nfc_pulse": "animate-pulse ring-4 ring-orange-500/20"
+  },
+  "icons_library": "@phosphor-icons/react",
+  "media": {
+    "home_greeting_bg": {
+      "url": "https://images.unsplash.com/photo-1772644003387-bcbd11f10c07?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxrb2xrYXRhJTIwY2l0eXNjYXBlJTIwbmlnaHR8ZW58MHx8fHwxNzc1MTYxMzc5fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Kolkata night cityscape for top header/greeting section behind the weather/date."
+    },
+    "virtual_card_bg": {
+      "url": "https://images.unsplash.com/photo-1762278805645-cdcbd21c0e7f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxkYXJrJTIwYWJzdHJhY3QlMjBibHVlJTIwd2F2ZXxlbnwwfHx8fDE3NzUxNjEzOTN8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract blue light streaks for the Virtual Metro Card background overlay."
+    },
+    "qr_code_abstract": {
+      "url": "https://images.unsplash.com/photo-1650454664813-904aa41701bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxxciUyMGNvZGUlMjB0ZWNobm9sb2d5JTIwZGFya3xlbnwwfHx8fDE3NzUxNjEzOTN8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract digital squares for ticket QR screen background."
+    }
+  },
+  "components_instructions": [
+    {
+      "name": "BottomNavigation",
+      "instructions": "Use fixed position at bottom. 4-5 items: Home, Map, Tickets, Profile. Use Phosphor Icons. Active state uses Orange (#FF8C00) and an active indicator dot."
+    },
+    {
+      "name": "RouteFinder",
+      "instructions": "Vertical timeline design. Two main inputs for Source and Destination. Swap button between them. Display connecting stations with Line Color indicator dots (Blue, Green, Purple, Orange)."
+    },
+    {
+      "name": "VirtualMetroCard",
+      "instructions": "A credit-card proportioned div. Background image `virtual_card_bg` with black/60 overlay. Add a 'Tap to Pay (NFC)' pulsing area. Display current balance prominently."
+    },
+    {
+      "name": "StationDetailsBottomSheet",
+      "instructions": "Use a bottom sheet pattern (framer-motion slide up) for showing station details, facilities (escalator, parking), and upcoming trains."
+    },
+    {
+      "name": "AIChatbot",
+      "instructions": "Floating Action Button above the bottom nav or a dedicated tab. Chat interface with dark bubbles. AI messages have subtle gradient border. Include suggested prompts like 'First train from Dum Dum?'"
+    }
+  ],
+  "accessibility_and_testing": {
+    "testing_attributes": "All interactive elements MUST have data-testid in kebab-case, e.g., data-testid='swap-stations-button', data-testid='buy-ticket-cta'",
+    "contrast": "Ensure text over gradients has text-shadow or a dark overlay underneath. Secondary text must be Zinc-400 or lighter for APCA/WCAG AA compliance."
+  }
+}
